@@ -1,0 +1,30 @@
+error[E0433]: failed to resolve: could not find `generated` in the crate root
+ --> $DIR/param_but_no_question_mark.rs:4:5
+  |
+4 |     query!("select * from test_table where b = ? and c = ?", b)
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ could not find `generated` in the crate root
+  |
+  = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0425]: cannot find value `b` in this scope
+ --> $DIR/param_but_no_question_mark.rs:4:62
+  |
+4 |     query!("select * from test_table where b = ? and c = ?", b)
+  |                                                              ^ not found in this scope
+
+error[E0277]: the `?` operator can only be used in a function that returns `Result` or `Option` (or another type that implements `FromResidual`)
+   --> $DIR/param_but_no_question_mark.rs:4:63
+    |
+3   | / fn main() {
+4   | |     query!("select * from test_table where b = ? and c = ?", b)
+    | |                                                               ^ cannot use the `?` operator in a function that returns `()`
+5   | | }
+    | |_- this function should return `Result` or `Option` to accept `?`
+    |
+    = help: the trait `FromResidual<std::result::Result<Infallible, scylla::frame::value::SerializeValuesError>>` is not implemented for `()`
+note: required by `from_residual`
+   --> $DIR/try_trait.rs:339:5
+    |
+339 |     fn from_residual(residual: R) -> Self;
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)

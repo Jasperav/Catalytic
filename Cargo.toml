@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "scylla_orm",
+    "scylla_orm_table_to_struct",
+    "scylla_orm_table_to_struct/example",
+    "scylla_orm_macro",
+    "scylla_orm_query_parser",
+]

@@ -1,0 +1,26 @@
+[package]
+name = "example_project"
+version = "0.1.0"
+authors = ["Jasper Visser <jasperav@hotmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+scylla_orm_table_to_struct = { path = "../" }
+scylla_orm = { path = "../../scylla_orm" }
+dotenv = "0.15"
+
+[dependencies]
+# TODO :change to 'real' scylla driver
+scylla = { git = "https://github.com/Jasperav/scylla-rust-driver", branch = "main" }
+tracing = "0.1"
+scylla_orm_macro = { path = "../../scylla_orm_macro" }
+scylla_orm = { path = "../../scylla_orm" }
+tokio = "*"
+serde_json = "1"
+serde = "1"
+uuid = "0.8"
+trybuild = "1"
+futures-util = "0.3"
+tracing-subscriber = "0.2"

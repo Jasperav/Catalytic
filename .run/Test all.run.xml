@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test all" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="command" value="test --all -- --test-threads=1" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$/scylla_orm_query" />
+    <option name="channel" value="DEFAULT" />
+    <option name="requiredFeatures" value="true" />
+    <option name="allFeatures" value="false" />
+    <option name="emulateTerminal" value="false" />
+    <option name="withSudo" value="false" />
+    <option name="backtrace" value="SHORT" />
+    <envs>
+      <env name="TEST_DB_KEYSPACE_KEY" value="test_keyspace_for_testing" />
+      <env name="GENERATED_DB_ENTITIES_PATH_PREFIX" value="crate::generated" />
+    </envs>
+    <option name="isRedirectInput" value="false" />
+    <option name="redirectInputPath" value="" />
+    <method v="2">
+      <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+    </method>
+  </configuration>
+</component>

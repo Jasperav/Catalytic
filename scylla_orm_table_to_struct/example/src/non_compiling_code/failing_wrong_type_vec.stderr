@@ -1,0 +1,45 @@
+error[E0433]: failed to resolve: could not find `generated` in the crate root
+ --> $DIR/failing_wrong_type_vec.rs:6:5
+  |
+6 |     query!("select * from test_table where b = 1 and c in ?", a);
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ could not find `generated` in the crate root
+  |
+  = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Vec<i32>: From<{integer}>` is not satisfied
+   --> $DIR/failing_wrong_type_vec.rs:6:5
+    |
+6   |     query!("select * from test_table where b = 1 and c in ?", a);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `From<{integer}>` is not implemented for `Vec<i32>`
+    |
+    = help: the following implementations were found:
+              <Vec<T, A> as From<Box<[T], A>>>
+              <Vec<T> as From<&[T]>>
+              <Vec<T> as From<&mut [T]>>
+              <Vec<T> as From<BinaryHeap<T>>>
+            and 6 others
+note: required by `from`
+   --> $DIR/mod.rs:371:5
+    |
+371 |     fn from(_: T) -> Self;
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+    = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the `?` operator can only be used in a function that returns `Result` or `Option` (or another type that implements `FromResidual`)
+   --> $DIR/failing_wrong_type_vec.rs:6:65
+    |
+3   | / fn main() {
+4   | |     let a = 1;
+5   | |
+6   | |     query!("select * from test_table where b = 1 and c in ?", a);
+    | |                                                                 ^ cannot use the `?` operator in a function that returns `()`
+7   | | }
+    | |_- this function should return `Result` or `Option` to accept `?`
+    |
+    = help: the trait `FromResidual<std::result::Result<Infallible, scylla::frame::value::SerializeValuesError>>` is not implemented for `()`
+note: required by `from_residual`
+   --> $DIR/try_trait.rs:339:5
+    |
+339 |     fn from_residual(residual: R) -> Self;
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)

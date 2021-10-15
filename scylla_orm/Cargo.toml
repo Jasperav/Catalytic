@@ -1,0 +1,16 @@
+[package]
+name = "scylla_orm"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# TODO :change to 'real' scylla driver
+scylla = { git = "https://github.com/Jasperav/scylla-rust-driver", branch = "main" }
+once_cell = "1"
+heck = "0.3"
+uuid = "0.8"
+tokio = { version = "1", features = ["time", "rt-multi-thread", "io-util"] }
+tracing = "0.1"
+thiserror = "1"
