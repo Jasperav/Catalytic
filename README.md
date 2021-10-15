@@ -7,6 +7,7 @@
 This library contains several crates with the following features:
 
 - Automatic map tables to Rust `struct`s: **scylla_orm_table_to_struct**. See [Usage](#automatic-map-tables-to-rust).
+See the [generated](/scylla_orm_table_to_struct/example/src/generated) dir for the generated code.
 - Compile time checked queries: **scylla_orm_macro** (`scylla_orm_macro::query`). See [Usage](#scylla_orm_macro).
 - Plugin derive macro to generate business logic: **scylla_orm_macro** (`scylla_orm_macro::mirror`)
 - Automatic JSON mapping. When there is a column with type `text`, you can implement the
