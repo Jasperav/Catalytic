@@ -43,6 +43,15 @@ How to implement it yourself (step-by-step guide how to mimic the `example` crat
 - Call `scylla_orm_table_to_struct::generate`
 - Build the project
 
+An example of the structure of the generated code for table 'child' is:
+
+- Child: a `struct` with owned values. Can be converted to ChildRef, PrimaryKey and PrimaryKeyRef
+- ChildRef: a `struct` where the values are all borrowed. This `struct` can perform insertions. Can be converted to Child, PrimaryKey and PrimaryKeyRef
+- PrimaryKey: a `struct` which holds the owned values of the primary key fields of Child. Can be converted to PrimaryKeyRef.
+- PrimaryKeyRef: a `struct` where the values are all borrowed. This `struct` can perform updates, deletions and selects. Can be converted to PrimaryKey
+- UpdatableColumn: an `enum` which holds the enum variants with owned values of columns that can be updated. Can be converted to UpdatableColumnRef.
+- UpdatableColumnRef: an `enum` where the values are all borrowed. This is used by PrimaryKeyRef for updates. Can be converted to UpdatableColumn.
+
 ### Macros
 Crate `scylla_orm_macro` holds several macros that can be used to ensure compile/type checked queries.
 Examples on how this can be used can be found in [lib.rs](/scylla_orm_table_to_struct/example/src/lib.rs), method `qmd`.
