@@ -1,8 +1,15 @@
 [package]
 name = "scylla_orm_macro"
 version = "0.1.0"
-authors = ["Jasper Visser <jasperav@hotmail.com>"]
 edition = "2018"
+authors = ["Jasper Visser <jasperav@hotmail.com>"]
+description = "Macros for the ORM for Scylla, fully compatible with Apache Cassandra™"
+repository = "https://github.com/Jasperav/scylla_orm"
+readme = "../README.md"
+keywords = ["database", "scylla", "cql", "cassandra"]
+categories = ["database"]
+license = "MIT"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
