@@ -29,7 +29,7 @@ There are also `struct`s for CRUD operations.
 
 ## Usage
 ### Automatic map tables to Rust
-💡You can see an example on how to generate Rust `struct`s in the [example](/scylla_orm_table_to_struct/example) dir.
+You can see an example on how to generate Rust `struct`s in the [example](/scylla_orm_table_to_struct/example) dir.
 
 - In the build.rs file the `Transformer` trait is implemented and used for json mapping
 - In the generated dir you can see the generated `struct`s
