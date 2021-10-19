@@ -129,24 +129,27 @@ pub fn generate(base_dir: &Path, transformer: impl Transformer) {
         write!(file, "{}", tokens).unwrap();
 
         // Format the output, since everything is on 1 line
-        assert!(Command::new("rustfmt")
-            .arg(path_to_struct_file)
-            .current_dir(base_dir)
-            .status()
-            .unwrap()
-            .success());
+        // This should always work
+        assert!(format(&path_to_struct_file, base_dir));
     }
 
     // Close the strem
     drop(mod_file);
 
     // Format the output
-    assert!(Command::new("rustfmt")
-        .arg("mod.rs")
-        .current_dir(base_dir)
+    // This may fail sometimes with weird NULL bytes, in cause of failure, recursion
+    if !format("mod.rs", base_dir) {
+        generate(base_dir, transformer);
+    }
+}
+
+fn format(file: &str, dir: &Path) -> bool {
+    Command::new("rustfmt")
+        .arg(file)
+        .current_dir(dir)
         .status()
         .unwrap()
-        .success());
+        .success()
 }
 
 pub fn add_generated_header(file: &mut File) {
