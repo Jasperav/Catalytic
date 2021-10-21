@@ -701,6 +701,7 @@ dependencies = [
 name = "scylla_orm"
 version = "0.1.0"
 dependencies = [
+ "futures-util",
  "heck",
  "once_cell",
  "scylla",

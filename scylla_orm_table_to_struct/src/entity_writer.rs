@@ -43,6 +43,7 @@ impl<T: Transformer> EntityWriter<'_, T> {
                 ScyllaQueryResult,
                 SingleSelectQueryErrorTransform,
                 QueryEntityVecResult,
+                QueryEntityVec,
                 MultipleSelectQueryErrorTransform,
                 QueryResultUniqueRow,
                 QueryResultUniqueRowExpect,

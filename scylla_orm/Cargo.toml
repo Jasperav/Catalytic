@@ -21,3 +21,4 @@ uuid = "0.8"
 tokio = { version = "1", features = ["time", "rt-multi-thread", "io-util"] }
 tracing = "0.1"
 thiserror = "1"
+futures-util = "0.3"
