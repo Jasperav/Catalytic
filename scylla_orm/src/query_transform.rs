@@ -1,5 +1,5 @@
-// Generated file
 use crate::Cursor;
+use futures_util::{StreamExt, TryStreamExt};
 use scylla::cql_to_rust::FromRowError;
 use scylla::frame::value::{SerializeValuesError, ValueList};
 use scylla::query::Query;
@@ -44,6 +44,11 @@ pub enum MultipleSelectQueryErrorTransform {
 pub struct QueryEntityVecResult<T> {
     pub entities: Vec<T>,
     pub query_result: QueryResult,
+}
+
+/// Wrapper, maybe additional fields are added later
+pub struct QueryEntityVec<T> {
+    pub entities: Vec<T>,
 }
 
 impl<T> Deref for QueryEntityVecResult<T> {
@@ -211,7 +216,7 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
         session: &Session,
         page_size: i32,
         transform: impl Fn(T) -> N + Copy,
-    ) -> Result<QueryEntityVecResult<N>, MultipleSelectQueryErrorTransform> {
+    ) -> Result<QueryEntityVec<N>, MultipleSelectQueryErrorTransform> {
         let as_ref = self.query.as_ref();
 
         tracing::debug!("Executing with page size: {}: {}", page_size, as_ref);
@@ -220,13 +225,25 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
 
         query.set_page_size(page_size);
 
-        let mut result = session.execute_all_cached(query, &self.values).await?;
-        let rows = self.transform(&mut result, transform)?;
+        let rows = session
+            .execute_iter_cached(query, &self.values)
+            .await?
+            .map(|c| {
+                let row = c.map(T::from_row);
+                let transformed = row.map(|r| r.map(|c| transform(c)));
 
-        Ok(QueryEntityVecResult {
-            entities: rows,
-            query_result: result,
-        })
+                match transformed {
+                    Ok(ok) => match ok {
+                        Ok(row) => Ok(row),
+                        Err(err) => Err(MultipleSelectQueryErrorTransform::FromRowError(err)),
+                    },
+                    Err(err) => Err(MultipleSelectQueryErrorTransform::QueryError(err)),
+                }
+            })
+            .try_collect::<Vec<_>>()
+            .await?;
+
+        Ok(QueryEntityVec { entities: rows })
     }
 
     async fn execute_iter_cached<T: FromRow>(
@@ -445,7 +462,7 @@ impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectMultiple<R, T, V> {
         &self,
         session: &Session,
         page_size: i32,
-    ) -> Result<QueryEntityVecResult<T>, MultipleSelectQueryErrorTransform> {
+    ) -> Result<QueryEntityVec<T>, MultipleSelectQueryErrorTransform> {
         self.select_all_in_memory_transform(session, page_size, |v| v)
             .await
     }
@@ -455,7 +472,7 @@ impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectMultiple<R, T, V> {
         session: &Session,
         page_size: i32,
         transform: impl Fn(T) -> N + Copy,
-    ) -> Result<QueryEntityVecResult<N>, MultipleSelectQueryErrorTransform> {
+    ) -> Result<QueryEntityVec<N>, MultipleSelectQueryErrorTransform> {
         self.qv
             .execute_all_in_memory_cached(session, page_size, transform)
             .await

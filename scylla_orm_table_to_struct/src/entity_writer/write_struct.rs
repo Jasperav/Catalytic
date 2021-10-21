@@ -301,7 +301,7 @@ fn create_select_all_query(
             #select_multiple_qv().select(session, page_size).await
         }
 
-        pub async fn #select_multiple_all_in_memory(session: &Session, page_size: i32) -> Result<QueryEntityVecResult<#row_type>, MultipleSelectQueryErrorTransform> {
+        pub async fn #select_multiple_all_in_memory(session: &Session, page_size: i32) -> Result<QueryEntityVec<#row_type>, MultipleSelectQueryErrorTransform> {
             #select_multiple_qv().select_all_in_memory(session, page_size).await
         }
     }

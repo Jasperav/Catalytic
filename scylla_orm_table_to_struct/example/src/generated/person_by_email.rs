@@ -8,9 +8,10 @@ use scylla::transport::iterator::TypedRowIterator;
 use scylla::Session;
 #[allow(unused_imports)]
 use scylla_orm::query_transform::{
-    CountType, DeleteUnique, Insert, MultipleSelectQueryErrorTransform, QueryEntityVecResult,
-    QueryResultUniqueRow, QueryResultUniqueRowExpect, Qv, ScyllaQueryResult, SelectMultiple,
-    SelectUnique, SelectUniqueExpect, SingleSelectQueryErrorTransform, Truncate, TtlType, Update,
+    CountType, DeleteUnique, Insert, MultipleSelectQueryErrorTransform, QueryEntityVec,
+    QueryEntityVecResult, QueryResultUniqueRow, QueryResultUniqueRowExpect, Qv, ScyllaQueryResult,
+    SelectMultiple, SelectUnique, SelectUniqueExpect, SingleSelectQueryErrorTransform, Truncate,
+    TtlType, Update,
 };
 pub const SELECT_ALL_QUERY: &str = "select email, name, age from person_by_email";
 pub const SELECT_ALL_COUNT_QUERY: &str = "select count(*) from person_by_email";
@@ -73,7 +74,7 @@ pub async fn select_all(
 pub async fn select_all_in_memory(
     session: &Session,
     page_size: i32,
-) -> Result<QueryEntityVecResult<PersonByEmail>, MultipleSelectQueryErrorTransform> {
+) -> Result<QueryEntityVec<PersonByEmail>, MultipleSelectQueryErrorTransform> {
     select_all_qv()
         .select_all_in_memory(session, page_size)
         .await
@@ -126,7 +127,7 @@ pub async fn select_all_base_table(
 pub async fn select_all_base_table_in_memory(
     session: &Session,
     page_size: i32,
-) -> Result<QueryEntityVecResult<Person>, MultipleSelectQueryErrorTransform> {
+) -> Result<QueryEntityVec<Person>, MultipleSelectQueryErrorTransform> {
     select_all_base_table_qv()
         .select_all_in_memory(session, page_size)
         .await
