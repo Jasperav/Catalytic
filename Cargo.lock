@@ -307,9 +307,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.103"
+version = "0.2.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8f7255a17a627354f321ef0055d63b898c6fb27eff628af4d1b66b7331edf6"
+checksum = "7b2f96d100e1cf1929e7719b7edb3b90ab5298072638fccd77be9ce942ecdfce"
 
 [[package]]
 name = "log"
@@ -337,9 +337,9 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 
 [[package]]
 name = "mio"
-version = "0.7.13"
+version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c2bdb6314ec10835cd3293dd268473a835c02b7b352e788be788b3c6ca6bb16"
+checksum = "8067b404fe97c70829f082dec8bcf4f71225d7eaea1d8645349cb76fa06205cc"
 dependencies = [
  "libc",
  "log",
@@ -664,7 +664,7 @@ checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
 [[package]]
 name = "scylla"
 version = "0.2.1"
-source = "git+https://github.com/Jasperav/scylla-rust-driver?branch=main#46a5d1dbe6acf0b472c9a2bc477a1c71ab606992"
+source = "git+https://github.com/Jasperav/scylla-rust-driver?branch=main#6f929aca23ecf09471c578725f57869cc8cebaea"
 dependencies = [
  "arc-swap",
  "bigdecimal",
@@ -691,7 +691,7 @@ dependencies = [
 [[package]]
 name = "scylla-macros"
 version = "0.1.1"
-source = "git+https://github.com/Jasperav/scylla-rust-driver?branch=main#46a5d1dbe6acf0b472c9a2bc477a1c71ab606992"
+source = "git+https://github.com/Jasperav/scylla-rust-driver?branch=main#6f929aca23ecf09471c578725f57869cc8cebaea"
 dependencies = [
  "quote",
  "syn",
