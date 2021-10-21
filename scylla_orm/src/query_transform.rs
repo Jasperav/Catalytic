@@ -1,4 +1,5 @@
 use crate::Cursor;
+use futures_util::{StreamExt, TryStreamExt};
 use scylla::cql_to_rust::FromRowError;
 use scylla::frame::value::{SerializeValuesError, ValueList};
 use scylla::query::Query;
@@ -8,7 +9,6 @@ use scylla::{FromRow, QueryResult, Session};
 use std::fmt::{Debug, Formatter};
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
-use futures_util::{StreamExt, TryStreamExt};
 
 pub type ScyllaQueryResult = Result<QueryResult, QueryError>;
 pub type CountType = i64;
@@ -235,17 +235,15 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
                 match transformed {
                     Ok(ok) => match ok {
                         Ok(row) => Ok(row),
-                        Err(err) => Err(MultipleSelectQueryErrorTransform::FromRowError(err))
-                    }
-                    Err(err) => Err(MultipleSelectQueryErrorTransform::QueryError(err))
+                        Err(err) => Err(MultipleSelectQueryErrorTransform::FromRowError(err)),
+                    },
+                    Err(err) => Err(MultipleSelectQueryErrorTransform::QueryError(err)),
                 }
             })
             .try_collect::<Vec<_>>()
             .await?;
 
-        Ok(QueryEntityVec {
-            entities: rows,
-        })
+        Ok(QueryEntityVec { entities: rows })
     }
 
     async fn execute_iter_cached<T: FromRow>(
