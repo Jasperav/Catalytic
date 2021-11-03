@@ -74,7 +74,7 @@ pub(crate) fn write<T: Transformer>(
             }
         }
 
-        pub fn #select_all_count_fn_name_qv() -> #select_unique_expect<&'static str, scylla_orm::query_transform::Count, &'static [u8; 0]> {
+        pub fn #select_all_count_fn_name_qv() -> #select_unique_expect<scylla_orm::query_transform::Count, &'static str, &'static [u8; 0]> {
             #select_unique_expect::new(Qv {
                 query: #select_all_count_constant,
                 values: &[]
@@ -205,7 +205,7 @@ pub(crate) fn write<T: Transformer>(
                 }
 
                 impl <'a> #struct_name_ref_ident<'a> {
-                    pub fn #insert_qv(&self) -> Result<#insert<&'static str, SerializedValues>, SerializeValuesError> {
+                    pub fn #insert_qv(&self) -> Result<#insert, SerializeValuesError> {
                         let mut serialized = SerializedValues::with_capacity(#field_count);
 
                         #(serialized.add_value(&self.#idents)?);*;
@@ -223,7 +223,7 @@ pub(crate) fn write<T: Transformer>(
                         self.#insert_qv()?.insert(session).await
                     }
 
-                    pub fn #insert_ttl_qv(&self, ttl: TtlType) -> Result<#insert<&'static str, SerializedValues>, SerializeValuesError> {
+                    pub fn #insert_ttl_qv(&self, ttl: TtlType) -> Result<#insert, SerializeValuesError> {
                         let mut serialized = SerializedValues::with_capacity(#insert_with_ttl_values_len);
 
                         #(serialized.add_value(&self.#idents)?);*;
@@ -290,7 +290,7 @@ fn create_select_all_query(
     let select_multiple_all_in_memory = all_in_memory(fn_name);
 
     quote! {
-        pub fn #select_multiple_qv() -> #select_multiple<&'static str, #row_type, &'static [u8; 0]> {
+        pub fn #select_multiple_qv() -> #select_multiple<#row_type, &'static str, &'static [u8; 0]> {
             #select_multiple::new(Qv {
                 query: #select_all_query,
                 values: &[]

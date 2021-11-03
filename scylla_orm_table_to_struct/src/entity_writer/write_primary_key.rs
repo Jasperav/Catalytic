@@ -190,7 +190,7 @@ pub(crate) fn write<T: Transformer>(
 
                     tokens_type.extend(quote! {
                     impl #primary_key_struct_ref<'_> {
-                        pub fn #method_name_qv(&self, val: &#ty) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+                        pub fn #method_name_qv(&self, val: &#ty) -> Result<Update, SerializeValuesError> {
                             let mut serialized_values = SerializedValues::with_capacity(#single_update_len);
 
                             serialized_values.add_value(&val)?;
@@ -239,7 +239,7 @@ pub(crate) fn write<T: Transformer>(
 
                 tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
-                    pub fn #update_dyn_qv(&self, val: #updatable_column_ref<'_>) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+                    pub fn #update_dyn_qv(&self, val: #updatable_column_ref<'_>) -> Result<Update, SerializeValuesError> {
                         match val {
                             #(#updatable_column_ref::#variants(val) => self.#method_names_qv(val)),*
                         }
@@ -315,7 +315,7 @@ pub(crate) fn write<T: Transformer>(
             // Delete query
             tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
-                    pub fn #delete_fn_name_qv(&self) -> Result<DeleteUnique<&'static str, SerializedValues>, SerializeValuesError> {
+                    pub fn #delete_fn_name_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
                         #serialize
 
                             Ok(#delete_unique::new(
@@ -357,7 +357,7 @@ fn create_select_unique<T: Transformer>(
 
         quote! {
             impl #primary_key_struct<'_> {
-                pub fn #fn_name_qv(&self) -> Result<#transformer<&'static str, #struct_ident, SerializedValues>, SerializeValuesError> {
+                pub fn #fn_name_qv(&self) -> Result<#transformer<#struct_ident>, SerializeValuesError> {
                     #serialize
 
                     Ok(#transformer::new(

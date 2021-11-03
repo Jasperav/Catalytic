@@ -50,7 +50,7 @@ impl Query {
                 assert!(self.query_pretty.starts_with("select *"));
 
                 quote! {
-                    scylla_orm::query_transform::SelectMultiple::<_, #struct_name, _>::new(scylla_orm::query_transform::Qv {
+                    scylla_orm::query_transform::SelectMultiple::<#struct_name>::new(scylla_orm::query_transform::Qv {
                         query: #query_to_server,
                         values: #serialized_values,
                     })
@@ -60,7 +60,7 @@ impl Query {
                 assert!(self.query_pretty.starts_with("select *"));
 
                 quote! {
-                    scylla_orm::query_transform::SelectUnique::<_, #struct_name, _>::new(scylla_orm::query_transform::Qv {
+                    scylla_orm::query_transform::SelectUnique::<#struct_name>::new(scylla_orm::query_transform::Qv {
                         query: #query_to_server,
                         values: #serialized_values,
                     })
@@ -68,7 +68,7 @@ impl Query {
             }
             QueryType::SelectCount => {
                 quote! {
-                    scylla_orm::query_transform::SelectUniqueExpect::<_, scylla_orm::query_transform::Count, _>::new(scylla_orm::query_transform::Qv {
+                    scylla_orm::query_transform::SelectUniqueExpect::<scylla_orm::query_transform::Count>::new(scylla_orm::query_transform::Qv {
                         query: #query_to_server,
                         values: #serialized_values,
                     })

@@ -56,7 +56,7 @@ impl TestTable {
     }
 }
 pub fn select_all_count_qv(
-) -> SelectUniqueExpect<&'static str, scylla_orm::query_transform::Count, &'static [u8; 0]> {
+) -> SelectUniqueExpect<scylla_orm::query_transform::Count, &'static str, &'static [u8; 0]> {
     SelectUniqueExpect::new(Qv {
         query: SELECT_ALL_COUNT_QUERY,
         values: &[],
@@ -67,7 +67,7 @@ pub async fn select_all_count(
 ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
     select_all_count_qv().select_count(session).await
 }
-pub fn select_all_qv() -> SelectMultiple<&'static str, TestTable, &'static [u8; 0]> {
+pub fn select_all_qv() -> SelectMultiple<TestTable, &'static str, &'static [u8; 0]> {
     SelectMultiple::new(Qv {
         query: SELECT_ALL_QUERY,
         values: &[],
@@ -137,9 +137,7 @@ pub async fn truncate(session: &Session) -> ScyllaQueryResult {
     truncate_qv().truncate(session).await
 }
 impl<'a> TestTableRef<'a> {
-    pub fn insert_qv(
-        &self,
-    ) -> Result<Insert<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
         let mut serialized = SerializedValues::with_capacity(5usize);
         serialized.add_value(&self.b)?;
         serialized.add_value(&self.c)?;
@@ -155,10 +153,7 @@ impl<'a> TestTableRef<'a> {
         tracing::debug!("Inserting: {:#?}", self);
         self.insert_qv()?.insert(session).await
     }
-    pub fn insert_ttl_qv(
-        &self,
-        ttl: TtlType,
-    ) -> Result<Insert<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
         let mut serialized = SerializedValues::with_capacity(6usize);
         serialized.add_value(&self.b)?;
         serialized.add_value(&self.c)?;
@@ -227,9 +222,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn select_unique_qv(
-        &self,
-    ) -> Result<SelectUnique<&'static str, TestTable, SerializedValues>, SerializeValuesError> {
+    pub fn select_unique_qv(&self) -> Result<SelectUnique<TestTable>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(4usize);
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
@@ -255,8 +248,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
-    ) -> Result<SelectUniqueExpect<&'static str, TestTable, SerializedValues>, SerializeValuesError>
-    {
+    ) -> Result<SelectUniqueExpect<TestTable>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(4usize);
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
@@ -280,10 +272,7 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn update_e_qv(
-        &self,
-        val: &i32,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn update_e_qv(&self, val: &i32) -> Result<Update, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(5usize);
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.b)?;
@@ -309,7 +298,7 @@ impl PrimaryKeyRef<'_> {
     pub fn update_dyn_qv(
         &self,
         val: UpdatableColumnRef<'_>,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    ) -> Result<Update, SerializeValuesError> {
         match val {
             UpdatableColumnRef::E(val) => self.update_e_qv(val),
         }
@@ -369,9 +358,7 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn delete_qv(
-        &self,
-    ) -> Result<DeleteUnique<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn delete_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(4usize);
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;

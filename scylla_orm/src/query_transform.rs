@@ -1,6 +1,7 @@
 use crate::Cursor;
 use futures_util::{StreamExt, TryStreamExt};
 use scylla::cql_to_rust::FromRowError;
+use scylla::frame::value::SerializedValues;
 use scylla::frame::value::{SerializeValuesError, ValueList};
 use scylla::query::Query;
 use scylla::transport::errors::QueryError;
@@ -180,7 +181,7 @@ impl<T: FromRow> QueryResultUniqueRowExpect<T> {
     }
 }
 
-pub struct Qv<R: AsRef<str>, V: ValueList> {
+pub struct Qv<R: AsRef<str> = &'static str, V: ValueList = SerializedValues> {
     pub query: R,
     pub values: V,
 }
@@ -320,7 +321,7 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
 macro_rules! simple_qv_holder {
     ($ ident : ident , $ method : ident) => {
         #[derive(Debug)]
-        pub struct $ident<R: AsRef<str>, V: ValueList> {
+        pub struct $ident<R: AsRef<str> = &'static str, V: ValueList = SerializedValues> {
             pub qv: Qv<R, V>,
         }
         impl<R: AsRef<str>, V: ValueList> $ident<R, V> {
@@ -357,17 +358,19 @@ simple_qv_holder!(Truncate, truncate);
 macro_rules! read_transform {
     ($ ident : ident) => {
         #[derive(Debug)]
-        pub struct $ident<R: AsRef<str>, T: FromRow, V: ValueList> {
+        pub struct $ident<T: FromRow, R: AsRef<str> = &'static str, V: ValueList = SerializedValues>
+        {
             pub qv: Qv<R, V>,
             p: PhantomData<T>,
         }
-        impl<R: AsRef<str>, T: FromRow, V: ValueList> $ident<R, T, V> {
-            pub fn new(qv: Qv<R, V>) -> $ident<R, T, V> {
+
+        impl<T: FromRow, R: AsRef<str>, V: ValueList> $ident<T, R, V> {
+            pub fn new(qv: Qv<R, V>) -> $ident<T, R, V> {
                 $ident { qv, p: PhantomData }
             }
         }
 
-        impl<R: AsRef<str>, T: FromRow, V: ValueList> Deref for $ident<R, T, V> {
+        impl<T: FromRow, R: AsRef<str>, V: ValueList> Deref for $ident<T, R, V> {
             type Target = Qv<R, V>;
 
             fn deref(&self) -> &Self::Target {
@@ -375,7 +378,7 @@ macro_rules! read_transform {
             }
         }
 
-        impl<R: AsRef<str> + Clone, T: FromRow, V: ValueList + Clone> Clone for $ident<R, T, V> {
+        impl<T: FromRow, R: AsRef<str> + Clone, V: ValueList + Clone> Clone for $ident<T, R, V> {
             fn clone(&self) -> Self {
                 $ident::new(self.qv.clone())
             }
@@ -386,8 +389,8 @@ read_transform!(SelectMultiple);
 read_transform!(SelectUnique);
 read_transform!(SelectUniqueExpect);
 
-impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectUnique<R, T, V> {
-    pub fn expect(self) -> SelectUniqueExpect<R, T, V> {
+impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUnique<T, R, V> {
+    pub fn expect(self) -> SelectUniqueExpect<T, R, V> {
         SelectUniqueExpect::new(self.qv)
     }
 
@@ -402,7 +405,7 @@ impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectUnique<R, T, V> {
     }
 }
 
-impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectUniqueExpect<R, T, V> {
+impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUniqueExpect<T, R, V> {
     pub async fn select(
         &self,
         session: &Session,
@@ -414,7 +417,7 @@ impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectUniqueExpect<R, T, V> {
     }
 }
 
-impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<R, Count, V> {
+impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<Count, R, V> {
     pub async fn select_count(
         &self,
         session: &Session,
@@ -427,7 +430,7 @@ impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<R, Count, V> {
     }
 }
 
-impl<R: AsRef<str>, T: FromRow, V: ValueList> SelectMultiple<R, T, V> {
+impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectMultiple<T, R, V> {
     pub async fn select(
         &self,
         session: &Session,

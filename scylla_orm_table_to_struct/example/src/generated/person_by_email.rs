@@ -48,7 +48,7 @@ impl PersonByEmail {
     }
 }
 pub fn select_all_count_qv(
-) -> SelectUniqueExpect<&'static str, scylla_orm::query_transform::Count, &'static [u8; 0]> {
+) -> SelectUniqueExpect<scylla_orm::query_transform::Count, &'static str, &'static [u8; 0]> {
     SelectUniqueExpect::new(Qv {
         query: SELECT_ALL_COUNT_QUERY,
         values: &[],
@@ -59,7 +59,7 @@ pub async fn select_all_count(
 ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
     select_all_count_qv().select_count(session).await
 }
-pub fn select_all_qv() -> SelectMultiple<&'static str, PersonByEmail, &'static [u8; 0]> {
+pub fn select_all_qv() -> SelectMultiple<PersonByEmail, &'static str, &'static [u8; 0]> {
     SelectMultiple::new(Qv {
         query: SELECT_ALL_QUERY,
         values: &[],
@@ -112,7 +112,7 @@ impl<'a> PersonByEmailRef<'a> {
         }
     }
 }
-pub fn select_all_base_table_qv() -> SelectMultiple<&'static str, Person, &'static [u8; 0]> {
+pub fn select_all_base_table_qv() -> SelectMultiple<Person, &'static str, &'static [u8; 0]> {
     SelectMultiple::new(Qv {
         query: SELECT_ALL_QUERY_BASE_TABLE,
         values: &[],
@@ -171,10 +171,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn select_unique_qv(
-        &self,
-    ) -> Result<SelectUnique<&'static str, PersonByEmail, SerializedValues>, SerializeValuesError>
-    {
+    pub fn select_unique_qv(&self) -> Result<SelectUnique<PersonByEmail>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(3usize);
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
@@ -199,10 +196,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
-    ) -> Result<
-        SelectUniqueExpect<&'static str, PersonByEmail, SerializedValues>,
-        SerializeValuesError,
-    > {
+    ) -> Result<SelectUniqueExpect<PersonByEmail>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(3usize);
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
@@ -227,7 +221,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     pub fn select_unique_base_table_qv(
         &self,
-    ) -> Result<SelectUnique<&'static str, Person, SerializedValues>, SerializeValuesError> {
+    ) -> Result<SelectUnique<Person>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(3usize);
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
@@ -252,8 +246,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_base_table_qv(
         &self,
-    ) -> Result<SelectUniqueExpect<&'static str, Person, SerializedValues>, SerializeValuesError>
-    {
+    ) -> Result<SelectUniqueExpect<Person>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(3usize);
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;

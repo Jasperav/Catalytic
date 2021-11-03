@@ -52,7 +52,7 @@ impl Child {
     }
 }
 pub fn select_all_count_qv(
-) -> SelectUniqueExpect<&'static str, scylla_orm::query_transform::Count, &'static [u8; 0]> {
+) -> SelectUniqueExpect<scylla_orm::query_transform::Count, &'static str, &'static [u8; 0]> {
     SelectUniqueExpect::new(Qv {
         query: SELECT_ALL_COUNT_QUERY,
         values: &[],
@@ -63,7 +63,7 @@ pub async fn select_all_count(
 ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
     select_all_count_qv().select_count(session).await
 }
-pub fn select_all_qv() -> SelectMultiple<&'static str, Child, &'static [u8; 0]> {
+pub fn select_all_qv() -> SelectMultiple<Child, &'static str, &'static [u8; 0]> {
     SelectMultiple::new(Qv {
         query: SELECT_ALL_QUERY,
         values: &[],
@@ -127,9 +127,7 @@ pub async fn truncate(session: &Session) -> ScyllaQueryResult {
     truncate_qv().truncate(session).await
 }
 impl<'a> ChildRef<'a> {
-    pub fn insert_qv(
-        &self,
-    ) -> Result<Insert<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
         let mut serialized = SerializedValues::with_capacity(4usize);
         serialized.add_value(&self.birthday)?;
         serialized.add_value(&self.enum_json)?;
@@ -144,10 +142,7 @@ impl<'a> ChildRef<'a> {
         tracing::debug!("Inserting: {:#?}", self);
         self.insert_qv()?.insert(session).await
     }
-    pub fn insert_ttl_qv(
-        &self,
-        ttl: TtlType,
-    ) -> Result<Insert<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
         let mut serialized = SerializedValues::with_capacity(5usize);
         serialized.add_value(&self.birthday)?;
         serialized.add_value(&self.enum_json)?;
@@ -200,9 +195,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn select_unique_qv(
-        &self,
-    ) -> Result<SelectUnique<&'static str, Child, SerializedValues>, SerializeValuesError> {
+    pub fn select_unique_qv(&self) -> Result<SelectUnique<Child>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(1usize);
         serialized_values.add_value(&self.birthday)?;
         Ok(SelectUnique::new(Qv {
@@ -225,8 +218,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
-    ) -> Result<SelectUniqueExpect<&'static str, Child, SerializedValues>, SerializeValuesError>
-    {
+    ) -> Result<SelectUniqueExpect<Child>, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(1usize);
         serialized_values.add_value(&self.birthday)?;
         Ok(SelectUniqueExpect::new(Qv {
@@ -250,7 +242,7 @@ impl PrimaryKeyRef<'_> {
     pub fn update_enum_json_qv(
         &self,
         val: &crate::MyJsonEnum,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    ) -> Result<Update, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(2usize);
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.birthday)?;
@@ -274,10 +266,7 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn update_json_qv(
-        &self,
-        val: &crate::MyJsonType,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn update_json_qv(&self, val: &crate::MyJsonType) -> Result<Update, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(2usize);
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.birthday)?;
@@ -304,7 +293,7 @@ impl PrimaryKeyRef<'_> {
     pub fn update_json_nullable_qv(
         &self,
         val: &std::option::Option<crate::MyJsonType>,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    ) -> Result<Update, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(2usize);
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.birthday)?;
@@ -331,7 +320,7 @@ impl PrimaryKeyRef<'_> {
     pub fn update_dyn_qv(
         &self,
         val: UpdatableColumnRef<'_>,
-    ) -> Result<Update<&'static str, SerializedValues>, SerializeValuesError> {
+    ) -> Result<Update, SerializeValuesError> {
         match val {
             UpdatableColumnRef::EnumJson(val) => self.update_enum_json_qv(val),
             UpdatableColumnRef::Json(val) => self.update_json_qv(val),
@@ -398,9 +387,7 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
-    pub fn delete_qv(
-        &self,
-    ) -> Result<DeleteUnique<&'static str, SerializedValues>, SerializeValuesError> {
+    pub fn delete_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
         let mut serialized_values = SerializedValues::with_capacity(1usize);
         serialized_values.add_value(&self.birthday)?;
         Ok(DeleteUnique::new(Qv {
