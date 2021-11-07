@@ -157,6 +157,20 @@ impl<'a> PersonRef<'a> {
         }
     }
 }
+impl Person {
+    pub fn in_memory_update(&mut self, update: UpdatableColumn) {
+        match update {
+            UpdatableColumn::Email(val) => {
+                self.email = val;
+            }
+        }
+    }
+    pub fn in_memory_updates(&mut self, updates: Vec<UpdatableColumn>) {
+        for updatable_column in updates {
+            self.in_memory_update(updatable_column)
+        }
+    }
+}
 #[derive(scylla_orm_macro :: PrimaryKey, Debug, Clone, PartialEq)]
 pub struct PrimaryKey {
     #[partition_key]

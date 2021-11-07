@@ -166,6 +166,26 @@ impl<'a> ChildRef<'a> {
         }
     }
 }
+impl Child {
+    pub fn in_memory_update(&mut self, update: UpdatableColumn) {
+        match update {
+            UpdatableColumn::EnumJson(val) => {
+                self.enum_json = val;
+            }
+            UpdatableColumn::Json(val) => {
+                self.json = val;
+            }
+            UpdatableColumn::JsonNullable(val) => {
+                self.json_nullable = val;
+            }
+        }
+    }
+    pub fn in_memory_updates(&mut self, updates: Vec<UpdatableColumn>) {
+        for updatable_column in updates {
+            self.in_memory_update(updatable_column)
+        }
+    }
+}
 #[derive(scylla_orm_macro :: PrimaryKey, Debug, Clone, PartialEq)]
 pub struct PrimaryKey {
     #[partition_key]

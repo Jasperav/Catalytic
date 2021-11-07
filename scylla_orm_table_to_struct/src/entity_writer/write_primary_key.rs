@@ -1,4 +1,5 @@
 use crate::entity_writer::EntityWriter;
+use crate::query_ident::create_variant;
 use crate::query_ident::{
     base_table, base_table_query, delete_constant, delete_fn_name, primary_key_struct,
     primary_key_struct_ref, qv, select_unique_constant, select_unique_expect_fn_name,
@@ -6,7 +7,6 @@ use crate::query_ident::{
     update_field,
 };
 use crate::transformer::Transformer;
-use heck::CamelCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::format_ident;
 use quote::quote;
@@ -228,7 +228,7 @@ pub(crate) fn write<T: Transformer>(
                     .non_primary_key_fields
                     .iter()
                 {
-                    let v = format_ident!("{}", f.ident.to_string().to_camel_case());
+                    let v = create_variant(&f.ident);
                     let (method_name, _) = update_field(&f.ident);
 
                     variants.push(quote! {

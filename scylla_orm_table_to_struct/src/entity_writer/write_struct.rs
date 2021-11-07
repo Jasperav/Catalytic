@@ -1,10 +1,11 @@
 use crate::entity_writer::EntityWriter;
 use crate::query_ident::{
-    all_in_memory, base_table, base_table_query, delete_fn_name, insert_constant, insert_fn_name,
-    insert_or_delete_fn_name, insert_ttl_constant, insert_ttl_fn_name, primary_key_owned,
-    primary_key_struct, primary_key_struct_parameter, primary_key_struct_ref, qv,
-    select_all_constant, select_all_count_constant, select_all_count_fn_name, select_all_fn_name,
-    struct_ref, to_ref, truncate_constant, truncate_fn_name,
+    all_in_memory, base_table, base_table_query, create_variant, delete_fn_name, in_memory_update,
+    in_memory_updates, insert_constant, insert_fn_name, insert_or_delete_fn_name,
+    insert_ttl_constant, insert_ttl_fn_name, primary_key_owned, primary_key_struct,
+    primary_key_struct_parameter, primary_key_struct_ref, qv, select_all_constant,
+    select_all_count_constant, select_all_count_fn_name, select_all_fn_name, struct_ref, to_ref,
+    truncate_constant, truncate_fn_name, updatable_column,
 };
 use crate::transformer::Transformer;
 use proc_macro2::{Ident, TokenStream};
@@ -251,6 +252,41 @@ pub(crate) fn write<T: Transformer>(
                     }
                 }
             });
+
+            let in_memory_updates = in_memory_updates();
+            let in_memory_update = in_memory_update();
+            let updatable_column = updatable_column();
+            let mut variants = vec![];
+            let fields = entity_writer
+                .struct_field_metadata
+                .non_primary_key_fields
+                .iter()
+                .map(|f| &f.ident)
+                .collect::<Vec<_>>();
+
+            for field in &fields {
+                variants.push(create_variant(field));
+            }
+
+            if !fields.is_empty() {
+                tokens_type.extend(quote! {
+                    impl #struct_name_ident {
+                        pub fn #in_memory_update(&mut self, update: #updatable_column) {
+                            match update {
+                                #(#updatable_column::#variants(val) => {
+                                self.#fields = val;
+                                }),*
+                            }
+                        }
+
+                        pub fn #in_memory_updates(&mut self, updates: Vec<#updatable_column>) {
+                            for updatable_column in updates {
+                                self.#in_memory_update(updatable_column)
+                            }
+                        }
+                    }
+                });
+            }
         }
         Some(mv) => {
             if mv.same_columns {
