@@ -1,3 +1,4 @@
+use heck::CamelCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::format_ident;
 
@@ -37,12 +38,24 @@ pub fn updatable_column_ref() -> Ident {
     struct_ref(&updatable_column())
 }
 
+pub fn create_variant(ident: &Ident) -> Ident {
+    format_ident!("{}", ident.to_string().to_camel_case())
+}
+
 pub fn update_dyn() -> Ident {
     format_ident!("update_dyn")
 }
 
 pub fn update_dyn_multiple() -> Ident {
     format_ident!("update_dyn_multiple")
+}
+
+pub fn in_memory_update() -> Ident {
+    format_ident!("in_memory_update")
+}
+
+pub fn in_memory_updates() -> Ident {
+    format_ident!("in_memory_updates")
 }
 
 macro_rules! write_query {
