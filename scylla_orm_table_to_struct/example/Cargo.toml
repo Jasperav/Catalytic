@@ -14,15 +14,15 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-scylla_orm_table_to_struct = { path = "../../scylla_orm_table_to_struct" }
-scylla_orm = { path = "../../scylla_orm" }
+scylla_orm_table_to_struct = { version = "0.1", path = "../../scylla_orm_table_to_struct" }
+scylla_orm = { version = "0.1", path = "../../scylla_orm" }
 dotenv = "0.15"
 
 [dependencies]
 scylla = "0.3.0"
 tracing = "0.1"
-scylla_orm_macro = { path = "../../scylla_orm_macro" }
-scylla_orm = { path = "../../scylla_orm" }
+scylla_orm_macro = { version = "0.1", path = "../../scylla_orm_macro" }
+scylla_orm = { version = "0.1", path = "../../scylla_orm" }
 tokio = "*"
 serde_json = "1"
 serde = "1"

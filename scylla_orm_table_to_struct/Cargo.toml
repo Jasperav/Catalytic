@@ -15,7 +15,7 @@ license = "MIT"
 
 [dependencies]
 scylla = "0.3.0"
-scylla_orm = { path = "../scylla_orm" }
+scylla_orm = { version = "0.1", path = "../scylla_orm" }
 proc-macro2 = "1"
 quote = "1"
 heck = "0.3"
