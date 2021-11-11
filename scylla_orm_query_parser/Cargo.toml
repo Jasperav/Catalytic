@@ -14,14 +14,14 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dev-dependencies]
-scylla_orm_macro = { path = "../scylla_orm_macro" }
+scylla_orm_macro = { version = "0.1", path = "../scylla_orm_macro" }
 trybuild = "1"
 
 [dependencies]
 scylla = "0.3.0"
 quote = "1"
 syn = { version = "1", features = ["full", "extra-traits"] }
-scylla_orm = { path = "../scylla_orm" }
+scylla_orm = { version = "0.1", path = "../scylla_orm" }
 proc-macro2 = "1"
 uuid = "0.8"
 regex = "1"
