@@ -19,6 +19,7 @@ mod test {
     use crate::{MyJsonEnum, MyJsonType};
     use futures_util::StreamExt;
     use scylla::frame::value::{SerializeValuesError, SerializedValues};
+    use scylla::CachingSession;
     use scylla_orm::runtime::create_connection;
     use scylla_orm_macro::{query, query_base_table};
 
@@ -26,7 +27,7 @@ mod test {
     async fn crud() {
         tracing_subscriber::fmt::init();
 
-        let session = create_connection().await;
+        let session = CachingSession::from(create_connection().await, 1);
 
         crate::generated::child::truncate(&session).await.unwrap();
         crate::generated::person::truncate(&session).await.unwrap();
@@ -239,7 +240,7 @@ mod test {
 
     #[tokio::test]
     async fn paging() -> Result<(), SerializeValuesError> {
-        let session = create_connection().await;
+        let session = CachingSession::from(create_connection().await, 1);
         let rows_to_generate = 100;
         let page_size = 7;
 
@@ -293,7 +294,7 @@ mod test {
 
     #[tokio::test]
     async fn qmd() -> Result<(), SerializeValuesError> {
-        let session = create_connection().await;
+        let session = CachingSession::from(create_connection().await, 1);
 
         crate::generated::person::truncate(&session).await.unwrap();
 

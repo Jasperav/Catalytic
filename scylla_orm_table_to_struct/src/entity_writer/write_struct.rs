@@ -82,7 +82,7 @@ pub(crate) fn write<T: Transformer>(
             })
         }
 
-        pub async fn #select_all_count_fn_name(session: &Session) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
+        pub async fn #select_all_count_fn_name(session: &CachingSession) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
             #select_all_count_fn_name_qv().select_count(session).await
         }
 
@@ -201,7 +201,7 @@ pub(crate) fn write<T: Transformer>(
                     })
                 }
 
-                pub async fn #truncate_fn_name(session: &Session) -> ScyllaQueryResult {
+                pub async fn #truncate_fn_name(session: &CachingSession) -> ScyllaQueryResult {
                     #truncate_qv().truncate(session).await
                 }
 
@@ -218,7 +218,7 @@ pub(crate) fn write<T: Transformer>(
                         ))
                     }
 
-                    pub async fn #insert_fn_name(&self, session: &Session) -> ScyllaQueryResult {
+                    pub async fn #insert_fn_name(&self, session: &CachingSession) -> ScyllaQueryResult {
                         #log_library::debug!("Inserting: {:#?}", self);
 
                         self.#insert_qv()?.insert(session).await
@@ -237,13 +237,13 @@ pub(crate) fn write<T: Transformer>(
                         }))
                     }
 
-                    pub async fn #insert_ttl_fn_name(&self, session: &Session, ttl: TtlType) -> ScyllaQueryResult {
+                    pub async fn #insert_ttl_fn_name(&self, session: &CachingSession, ttl: TtlType) -> ScyllaQueryResult {
                         #log_library::debug!("Insert with ttl {}, {:#?}", ttl, self);
 
                         self.#insert_ttl_qv(ttl)?.insert(session).await
                     }
 
-                    pub async fn #insert_or_delete(&self, session: &Session, insert: bool) -> ScyllaQueryResult {
+                    pub async fn #insert_or_delete(&self, session: &CachingSession, insert: bool) -> ScyllaQueryResult {
                         if insert {
                             self.#insert_fn_name(session).await
                         } else {
@@ -333,11 +333,11 @@ fn create_select_all_query(
             })
         }
 
-        pub async fn #fn_name(session: &Session, page_size: Option<i32>) -> Result<TypedRowIterator<#row_type>, QueryError> {
+        pub async fn #fn_name(session: &CachingSession, page_size: Option<i32>) -> Result<TypedRowIterator<#row_type>, QueryError> {
             #select_multiple_qv().select(session, page_size).await
         }
 
-        pub async fn #select_multiple_all_in_memory(session: &Session, page_size: i32) -> Result<QueryEntityVec<#row_type>, MultipleSelectQueryErrorTransform> {
+        pub async fn #select_multiple_all_in_memory(session: &CachingSession, page_size: i32) -> Result<QueryEntityVec<#row_type>, MultipleSelectQueryErrorTransform> {
             #select_multiple_qv().select_all_in_memory(session, page_size).await
         }
     }

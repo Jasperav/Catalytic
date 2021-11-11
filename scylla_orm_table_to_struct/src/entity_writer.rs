@@ -32,7 +32,7 @@ macro_rules! create_transformer {
 impl<T: Transformer> EntityWriter<'_, T> {
     pub fn create_tokens(self) -> TokenStream {
         let mut tokens = quote! {
-            use scylla::Session;
+            use scylla::CachingSession;
             use scylla::transport::iterator::TypedRowIterator;
             use scylla::transport::errors::QueryError;
             use scylla::frame::value::SerializedValues;

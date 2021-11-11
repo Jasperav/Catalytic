@@ -206,7 +206,7 @@ pub(crate) fn write<T: Transformer>(
 
                         pub async fn #method_name(
                             &self,
-                            session: &Session,
+                            session: &CachingSession,
                             val: &#ty,
                         ) -> ScyllaQueryResult {
                             #log_library::debug!("Updating table {} with val {:#?} for row {:#?}", #table_name, val, self);
@@ -245,7 +245,7 @@ pub(crate) fn write<T: Transformer>(
                         }
                     }
 
-                    pub async fn #update_dyn(&self, session: &Session, val: #updatable_column_ref<'_>) -> ScyllaQueryResult {
+                    pub async fn #update_dyn(&self, session: &CachingSession, val: #updatable_column_ref<'_>) -> ScyllaQueryResult {
                         self.#update_dyn_qv(val)?.update(session).await
                     }
                 }
@@ -292,7 +292,7 @@ pub(crate) fn write<T: Transformer>(
                             ))
                     }
 
-                    pub async fn #update_dyn_multiple(&self, session: &Session, val: &[#updatable_column_ref<'_>]) -> ScyllaQueryResult {
+                    pub async fn #update_dyn_multiple(&self, session: &CachingSession, val: &[#updatable_column_ref<'_>]) -> ScyllaQueryResult {
                         #log_library::debug!("Updating table {} with vals {:#?} for row {:#?}", #table_name, val, self);
 
                        self.#update_dyn_multiple_qv(val)?.update(session).await
@@ -326,7 +326,7 @@ pub(crate) fn write<T: Transformer>(
                             ))
                     }
 
-                    pub async fn #delete_fn_name(&self, session: &Session) -> ScyllaQueryResult {
+                    pub async fn #delete_fn_name(&self, session: &CachingSession) -> ScyllaQueryResult {
                         #log_library::debug!("Deleting a row from table {} with values {:#?}", #table_name, self);
 
                         self.#delete_fn_name_qv()?.delete_unique(session).await
@@ -367,7 +367,7 @@ fn create_select_unique<T: Transformer>(
                     }))
                 }
 
-                pub async fn #fn_name(&self, session: &Session) -> Result<#return_type<#struct_ident>, SingleSelectQueryErrorTransform> {
+                pub async fn #fn_name(&self, session: &CachingSession) -> Result<#return_type<#struct_ident>, SingleSelectQueryErrorTransform> {
                     #log_library::debug!("Selecting unique row for table {} with values: {:#?}", #table, self);
 
                     self.#fn_name_qv()?.select(session).await
