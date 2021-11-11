@@ -21,8 +21,8 @@ trybuild = "1"
 scylla = "0.3.0"
 quote = "1"
 syn = { version = "1", features = ["full", "extra-traits"] }
-scylla_orm = { path = "../scylla_orm" }
+scylla_orm = { version = "0.1", path = "../scylla_orm" }
 proc-macro2 = "1"
 uuid = "0.8"
 regex = "1"
-scylla_orm_table_to_struct = { path = "../scylla_orm_table_to_struct" }
+scylla_orm_table_to_struct = { version = "0.1", path = "../scylla_orm_table_to_struct" }
