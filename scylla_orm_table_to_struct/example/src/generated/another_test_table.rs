@@ -4,7 +4,7 @@ use scylla::frame::value::SerializeValuesError;
 use scylla::frame::value::SerializedValues;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
-use scylla::Session;
+use scylla::CachingSession;
 #[allow(unused_imports)]
 use scylla_orm::query_transform::{
     CountType, DeleteUnique, Insert, MultipleSelectQueryErrorTransform, QueryEntityVec,
@@ -59,7 +59,7 @@ pub fn select_all_count_qv(
     })
 }
 pub async fn select_all_count(
-    session: &Session,
+    session: &CachingSession,
 ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
     select_all_count_qv().select_count(session).await
 }
@@ -70,13 +70,13 @@ pub fn select_all_qv() -> SelectMultiple<AnotherTestTable, &'static str, &'stati
     })
 }
 pub async fn select_all(
-    session: &Session,
+    session: &CachingSession,
     page_size: Option<i32>,
 ) -> Result<TypedRowIterator<AnotherTestTable>, QueryError> {
     select_all_qv().select(session, page_size).await
 }
 pub async fn select_all_in_memory(
-    session: &Session,
+    session: &CachingSession,
     page_size: i32,
 ) -> Result<QueryEntityVec<AnotherTestTable>, MultipleSelectQueryErrorTransform> {
     select_all_qv()
@@ -125,7 +125,7 @@ pub fn truncate_qv() -> Truncate<&'static str, &'static [u8; 0]> {
         values: &[],
     })
 }
-pub async fn truncate(session: &Session) -> ScyllaQueryResult {
+pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
     truncate_qv().truncate(session).await
 }
 impl<'a> AnotherTestTableRef<'a> {
@@ -140,7 +140,7 @@ impl<'a> AnotherTestTableRef<'a> {
             values: serialized,
         }))
     }
-    pub async fn insert(&self, session: &Session) -> ScyllaQueryResult {
+    pub async fn insert(&self, session: &CachingSession) -> ScyllaQueryResult {
         tracing::debug!("Inserting: {:#?}", self);
         self.insert_qv()?.insert(session).await
     }
@@ -156,11 +156,15 @@ impl<'a> AnotherTestTableRef<'a> {
             values: serialized,
         }))
     }
-    pub async fn insert_ttl(&self, session: &Session, ttl: TtlType) -> ScyllaQueryResult {
+    pub async fn insert_ttl(&self, session: &CachingSession, ttl: TtlType) -> ScyllaQueryResult {
         tracing::debug!("Insert with ttl {}, {:#?}", ttl, self);
         self.insert_ttl_qv(ttl)?.insert(session).await
     }
-    pub async fn insert_or_delete(&self, session: &Session, insert: bool) -> ScyllaQueryResult {
+    pub async fn insert_or_delete(
+        &self,
+        session: &CachingSession,
+        insert: bool,
+    ) -> ScyllaQueryResult {
         if insert {
             self.insert(session).await
         } else {
@@ -233,7 +237,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRow<AnotherTestTable>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
@@ -258,7 +262,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique_expect(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRowExpect<AnotherTestTable>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
@@ -280,7 +284,7 @@ impl PrimaryKeyRef<'_> {
             values: serialized_values,
         }))
     }
-    pub async fn update_d(&self, session: &Session, val: &i32) -> ScyllaQueryResult {
+    pub async fn update_d(&self, session: &CachingSession, val: &i32) -> ScyllaQueryResult {
         tracing::debug!(
             "Updating table {} with val {:#?} for row {:#?}",
             "another_test_table",
@@ -301,7 +305,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn update_dyn(
         &self,
-        session: &Session,
+        session: &CachingSession,
         val: UpdatableColumnRef<'_>,
     ) -> ScyllaQueryResult {
         self.update_dyn_qv(val)?.update(session).await
@@ -340,7 +344,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn update_dyn_multiple(
         &self,
-        session: &Session,
+        session: &CachingSession,
         val: &[UpdatableColumnRef<'_>],
     ) -> ScyllaQueryResult {
         tracing::debug!(
@@ -363,7 +367,7 @@ impl PrimaryKeyRef<'_> {
             values: serialized_values,
         }))
     }
-    pub async fn delete(&self, session: &Session) -> ScyllaQueryResult {
+    pub async fn delete(&self, session: &CachingSession) -> ScyllaQueryResult {
         tracing::debug!(
             "Deleting a row from table {} with values {:#?}",
             "another_test_table",

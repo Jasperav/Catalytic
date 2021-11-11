@@ -18,8 +18,7 @@ scylla_orm_macro = { path = "../scylla_orm_macro" }
 trybuild = "1"
 
 [dependencies]
-# TODO :change to 'real' scylla driver
-scylla = { git = "https://github.com/Jasperav/scylla-rust-driver", branch = "main" }
+scylla = "0.3.0"
 quote = "1"
 syn = { version = "1", features = ["full", "extra-traits"] }
 scylla_orm = { path = "../scylla_orm" }

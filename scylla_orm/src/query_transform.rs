@@ -6,7 +6,7 @@ use scylla::frame::value::{SerializeValuesError, ValueList};
 use scylla::query::Query;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
-use scylla::{FromRow, QueryResult, Session};
+use scylla::{CachingSession, FromRow, QueryResult};
 use std::fmt::{Debug, Formatter};
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
@@ -204,17 +204,17 @@ impl<R: AsRef<str>, V: ValueList> Debug for Qv<R, V> {
 }
 
 impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
-    async fn execute_cached(&self, session: &Session) -> ScyllaQueryResult {
+    async fn execute(&self, session: &CachingSession) -> ScyllaQueryResult {
         let as_ref = self.query.as_ref();
 
         tracing::debug!("Executing: {}", as_ref);
 
-        session.execute_cached(as_ref, &self.values).await
+        session.execute(as_ref, &self.values).await
     }
 
-    async fn execute_all_in_memory_cached<T: FromRow, N>(
+    async fn execute_all_in_memory<T: FromRow, N>(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: i32,
         transform: impl Fn(T) -> N + Copy,
     ) -> Result<QueryEntityVec<N>, MultipleSelectQueryErrorTransform> {
@@ -227,7 +227,7 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
         query.set_page_size(page_size);
 
         let rows = session
-            .execute_iter_cached(query, &self.values)
+            .execute_iter(query, &self.values)
             .await?
             .map(|c| {
                 let row = c.map(T::from_row);
@@ -247,9 +247,9 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
         Ok(QueryEntityVec { entities: rows })
     }
 
-    async fn execute_iter_cached<T: FromRow>(
+    async fn execute_iter<T: FromRow>(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: Option<i32>,
     ) -> Result<TypedRowIterator<T>, QueryError> {
         let as_ref = self.query.as_ref();
@@ -262,14 +262,14 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
             query.set_page_size(p);
         }
 
-        let result = session.execute_iter_cached(query, &self.values).await?;
+        let result = session.execute_iter(query, &self.values).await?;
 
         Ok(result.into_typed())
     }
 
-    async fn execute_iter_paged_cached<T: FromRow, N>(
+    async fn execute_iter_paged<T: FromRow, N>(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: Option<i32>,
         paging_state: Cursor,
         transform: impl Fn(T) -> N + Copy,
@@ -290,7 +290,7 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
         }
 
         let mut result = session
-            .execute_paged_cached(query, &self.values, paging_state)
+            .execute_paged(query, &self.values, paging_state)
             .await?;
         let rows = self.transform(&mut result, transform)?;
 
@@ -329,8 +329,8 @@ macro_rules! simple_qv_holder {
                 Self { qv }
             }
 
-            pub async fn $method(&self, session: &Session) -> ScyllaQueryResult {
-                self.qv.execute_cached(session).await
+            pub async fn $method(&self, session: &CachingSession) -> ScyllaQueryResult {
+                self.qv.execute(session).await
             }
         }
 
@@ -396,9 +396,9 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUnique<T, R, V> {
 
     pub async fn select(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRow<T>, SingleSelectQueryErrorTransform> {
-        let result = self.qv.execute_cached(session).await?;
+        let result = self.qv.execute(session).await?;
         let result = QueryResultUniqueRow::from_query_result(result)?;
 
         Ok(result)
@@ -408,9 +408,9 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUnique<T, R, V> {
 impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUniqueExpect<T, R, V> {
     pub async fn select(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRowExpect<T>, SingleSelectQueryErrorTransform> {
-        let result = self.qv.execute_cached(session).await?;
+        let result = self.qv.execute(session).await?;
         let result = QueryResultUniqueRowExpect::from_query_result(result)?;
 
         Ok(result)
@@ -420,7 +420,7 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUniqueExpect<T, R, V> {
 impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<Count, R, V> {
     pub async fn select_count(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
         let count: QueryResultUniqueRowExpect<Count> = self.select(session).await?;
         Ok(QueryResultUniqueRowExpect {
@@ -433,15 +433,15 @@ impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<Count, R, V> {
 impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectMultiple<T, R, V> {
     pub async fn select(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: Option<i32>,
     ) -> Result<TypedRowIterator<T>, QueryError> {
-        self.qv.execute_iter_cached(session, page_size).await
+        self.qv.execute_iter(session, page_size).await
     }
 
     pub async fn select_paged(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: Option<i32>,
         paging_state: Cursor,
     ) -> Result<QueryEntityVecResult<T>, MultipleSelectQueryErrorTransform> {
@@ -451,19 +451,19 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectMultiple<T, R, V> {
 
     pub async fn select_paged_transform<N>(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: Option<i32>,
         paging_state: Cursor,
         transform: impl Fn(T) -> N + Copy,
     ) -> Result<QueryEntityVecResult<N>, MultipleSelectQueryErrorTransform> {
         self.qv
-            .execute_iter_paged_cached(session, page_size, paging_state, transform)
+            .execute_iter_paged(session, page_size, paging_state, transform)
             .await
     }
 
     pub async fn select_all_in_memory(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: i32,
     ) -> Result<QueryEntityVec<T>, MultipleSelectQueryErrorTransform> {
         self.select_all_in_memory_transform(session, page_size, |v| v)
@@ -472,12 +472,12 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectMultiple<T, R, V> {
 
     pub async fn select_all_in_memory_transform<N>(
         &self,
-        session: &Session,
+        session: &CachingSession,
         page_size: i32,
         transform: impl Fn(T) -> N + Copy,
     ) -> Result<QueryEntityVec<N>, MultipleSelectQueryErrorTransform> {
         self.qv
-            .execute_all_in_memory_cached(session, page_size, transform)
+            .execute_all_in_memory(session, page_size, transform)
             .await
     }
 }

@@ -5,7 +5,7 @@ use scylla::frame::value::SerializeValuesError;
 use scylla::frame::value::SerializedValues;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
-use scylla::Session;
+use scylla::CachingSession;
 #[allow(unused_imports)]
 use scylla_orm::query_transform::{
     CountType, DeleteUnique, Insert, MultipleSelectQueryErrorTransform, QueryEntityVec,
@@ -55,7 +55,7 @@ pub fn select_all_count_qv(
     })
 }
 pub async fn select_all_count(
-    session: &Session,
+    session: &CachingSession,
 ) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
     select_all_count_qv().select_count(session).await
 }
@@ -66,13 +66,13 @@ pub fn select_all_qv() -> SelectMultiple<PersonByEmail, &'static str, &'static [
     })
 }
 pub async fn select_all(
-    session: &Session,
+    session: &CachingSession,
     page_size: Option<i32>,
 ) -> Result<TypedRowIterator<PersonByEmail>, QueryError> {
     select_all_qv().select(session, page_size).await
 }
 pub async fn select_all_in_memory(
-    session: &Session,
+    session: &CachingSession,
     page_size: i32,
 ) -> Result<QueryEntityVec<PersonByEmail>, MultipleSelectQueryErrorTransform> {
     select_all_qv()
@@ -119,13 +119,13 @@ pub fn select_all_base_table_qv() -> SelectMultiple<Person, &'static str, &'stat
     })
 }
 pub async fn select_all_base_table(
-    session: &Session,
+    session: &CachingSession,
     page_size: Option<i32>,
 ) -> Result<TypedRowIterator<Person>, QueryError> {
     select_all_base_table_qv().select(session, page_size).await
 }
 pub async fn select_all_base_table_in_memory(
-    session: &Session,
+    session: &CachingSession,
     page_size: i32,
 ) -> Result<QueryEntityVec<Person>, MultipleSelectQueryErrorTransform> {
     select_all_base_table_qv()
@@ -183,7 +183,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRow<PersonByEmail>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
@@ -208,7 +208,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique_expect(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRowExpect<PersonByEmail>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
@@ -233,7 +233,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique_base_table(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRow<Person>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
@@ -258,7 +258,7 @@ impl PrimaryKeyRef<'_> {
     }
     pub async fn select_unique_expect_base_table(
         &self,
-        session: &Session,
+        session: &CachingSession,
     ) -> Result<QueryResultUniqueRowExpect<Person>, SingleSelectQueryErrorTransform> {
         tracing::debug!(
             "Selecting unique row for table {} with values: {:#?}",
