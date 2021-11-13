@@ -744,7 +744,7 @@ dependencies = [
 
 [[package]]
 name = "scylla_orm_table_to_struct"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "heck",
  "proc-macro2",
