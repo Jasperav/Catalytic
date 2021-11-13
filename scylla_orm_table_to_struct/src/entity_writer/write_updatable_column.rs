@@ -69,6 +69,7 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         .into_tokenstream();
 
     quote! {
+        #[allow(clippy::large_enum_variant)]
         #updatable_column_metadata
         pub enum #updatable_column {
             #(#updatable_column_variants),*

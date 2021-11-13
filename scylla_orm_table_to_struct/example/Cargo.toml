@@ -19,7 +19,7 @@ scylla_orm = { version = "0.1", path = "../../scylla_orm" }
 dotenv = "0.15"
 
 [dependencies]
-scylla = "0.3.0"
+scylla = "0.3"
 tracing = "0.1"
 scylla_orm_macro = { version = "0.1", path = "../../scylla_orm_macro" }
 scylla_orm = { version = "0.1", path = "../../scylla_orm" }

@@ -396,6 +396,7 @@ impl PrimaryKeyRef<'_> {
         self.delete_qv()?.delete_unique(session).await
     }
 }
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum UpdatableColumn {
     E(i32),
