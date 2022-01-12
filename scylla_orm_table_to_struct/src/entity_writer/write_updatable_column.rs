@@ -50,7 +50,10 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         });
 
         let fn_name = get_updatable_column_field(ident);
-        let message = format!("Creates the updatable column {} which can be used to update it in the database", ident);
+        let message = format!(
+            "Creates the updatable column {} which can be used to update it in the database",
+            ident
+        );
 
         get_updatable_column.push(quote! {
             #[doc = #message]

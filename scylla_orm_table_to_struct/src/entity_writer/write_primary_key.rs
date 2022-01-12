@@ -191,8 +191,12 @@ pub(crate) fn write<T: Transformer>(
                     );
                     let single_update_len = primary_key_len + 1;
                     let method_name_qv = qv(&method_name);
-                    let message_return = format!("Returns a struct that can perform an update operation for column {}", field.ident);
-                    let message_perform = format!("Performs an update operation for column {}", field.ident);
+                    let message_return = format!(
+                        "Returns a struct that can perform an update operation for column {}",
+                        field.ident
+                    );
+                    let message_perform =
+                        format!("Performs an update operation for column {}", field.ident);
                     let message_query = format!("The query to update column {}", field.ident);
 
                     tokens_constants.extend(quote! {
