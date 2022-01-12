@@ -50,8 +50,10 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         });
 
         let fn_name = get_updatable_column_field(ident);
+        let message = format!("Creates the updatable column {} which can be used to update it in the database", ident);
 
         get_updatable_column.push(quote! {
+            #[doc = #message]
             pub fn #fn_name(&self) -> #updatable_column_ref {
                 #updatable_column_ref::#variant_name(&self.#ident)
             }
@@ -69,6 +71,7 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         .into_tokenstream();
 
     quote! {
+        /// This struct can be converted to a borrowed struct which can be used to update single rows
         #[allow(clippy::large_enum_variant)]
         #updatable_column_metadata
         pub enum #updatable_column {
@@ -76,6 +79,7 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         }
 
         impl #updatable_column {
+            /// Conversation method to go from an owned updatable column struct to a borrowed updatable column struct
             pub fn to_ref(&self) -> #updatable_column_ref<'_> {
                 match &self {
                     #(#updatable_column_to_ref),*
@@ -83,6 +87,9 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
             }
         }
 
+        /// This struct can be used to update columns
+        /// If you have a borrowed primary key and you want to update a column, you can pass in
+        /// one of the variants
         #updatable_column_metadata_ref
         pub enum #updatable_column_ref<'a> {
             #(#updatable_column_ref_variants),*
@@ -93,12 +100,14 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         }
 
         impl UpdatableColumnVec for Vec<#updatable_column> {
+            /// Conversation method to go from a vec of owned updatable column structs to a vec of borrowed updatable column structs
             fn to_ref(&self) -> Vec<#updatable_column_ref<'_>> {
                 self.iter().map(|v| v.to_ref()).collect()
             }
         }
 
         impl From<#updatable_column_ref<'_>> for #updatable_column {
+            /// Conversation method to go from a borrowed updatable column struct to an owned updatable column struct
             fn from(f: #updatable_column_ref<'_>) -> #updatable_column {
                 match f {
                     #(#updatable_column_from_ref),*
@@ -107,6 +116,7 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
         }
 
         impl #updatable_column_ref<'_> {
+            /// Conversation method to go from a borrowed updatable column struct to an owned updatable column struct
             pub fn into_owned(self) -> #updatable_column {
                 self.into()
             }
