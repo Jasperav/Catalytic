@@ -89,26 +89,33 @@ pub(crate) fn write<T: Transformer>(
     let log_library = entity_writer.log_library();
 
     let mut tokens_constants = quote! {
+        /// The query to retrieve a unique row in this table
         pub const #select_unique_constant: &str = #select_unique_query;
     };
 
     let mut tokens_type = quote! {
+        /// The owned primary key struct
+        /// If you want to perform a read, delete or update, convert it to the borrowed type
         #primary_key_metadata
         pub struct #primary_key_struct {
             #(#primary_key_fields)*
         }
 
+        /// The borrowed primary key struct
+        /// This struct can be used to perform reads, deletes and updates
         #primary_key_ref_metadata
         pub struct #primary_key_struct_ref<'a> {
             #(#primary_key_ref_fields)*
         }
 
+        /// Conversation method to go from a borrowed primary key to an owned primary key
         impl #primary_key_struct_ref<'_> {
             pub fn into_owned(self) -> #primary_key_struct {
                 self.into()
             }
         }
 
+        /// Conversation method to go from an owned primary key to an borrowed primary key
         impl #primary_key_struct {
             pub fn #to_ref(&self) -> #primary_key_struct_ref<'_> {
                 #primary_key_struct_ref {
@@ -117,6 +124,7 @@ pub(crate) fn write<T: Transformer>(
             }
         }
 
+        /// Conversation method to go from a borrowed primary key to an owned primary key
         impl From<#primary_key_struct_ref<'_>> for #primary_key_struct {
             fn from(f: #primary_key_struct_ref<'_>) -> #primary_key_struct {
                 #primary_key_struct {
@@ -183,13 +191,22 @@ pub(crate) fn write<T: Transformer>(
                     );
                     let single_update_len = primary_key_len + 1;
                     let method_name_qv = qv(&method_name);
+                    let message_return = format!(
+                        "Returns a struct that can perform an update operation for column {}",
+                        field.ident
+                    );
+                    let message_perform =
+                        format!("Performs an update operation for column {}", field.ident);
+                    let message_query = format!("The query to update column {}", field.ident);
 
                     tokens_constants.extend(quote! {
+                        #[doc = #message_query]
                         pub const #constant: &str = #update_query;
                     });
 
                     tokens_type.extend(quote! {
                     impl #primary_key_struct_ref<'_> {
+                        #[doc = #message_return]
                         pub fn #method_name_qv(&self, val: &#ty) -> Result<Update, SerializeValuesError> {
                             let mut serialized_values = SerializedValues::with_capacity(#single_update_len);
 
@@ -204,6 +221,7 @@ pub(crate) fn write<T: Transformer>(
                             ))
                         }
 
+                        #[doc = #message_perform]
                         pub async fn #method_name(
                             &self,
                             session: &CachingSession,
@@ -239,12 +257,14 @@ pub(crate) fn write<T: Transformer>(
 
                 tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
+                    /// Returns a struct that can perform an update on a dynamic updatable column
                     pub fn #update_dyn_qv(&self, val: #updatable_column_ref<'_>) -> Result<Update, SerializeValuesError> {
                         match val {
                             #(#updatable_column_ref::#variants(val) => self.#method_names_qv(val)),*
                         }
                     }
 
+                    /// Performs the dynamic update
                     pub async fn #update_dyn(&self, session: &CachingSession, val: #updatable_column_ref<'_>) -> ScyllaQueryResult {
                         self.#update_dyn_qv(val)?.update(session).await
                     }
@@ -262,6 +282,7 @@ pub(crate) fn write<T: Transformer>(
 
                 tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
+                    /// Returns a struct that can perform a dynamic amount of column updates
                     pub fn #update_dyn_multiple_qv(&self, val: &[#updatable_column_ref<'_>]) -> Result<Update<String, SerializedValues>, SerializeValuesError> {
                          if val.is_empty() {
                             panic!("Empty update array")
@@ -292,6 +313,7 @@ pub(crate) fn write<T: Transformer>(
                             ))
                     }
 
+                    /// Performs the dynamic column updates
                     pub async fn #update_dyn_multiple(&self, session: &CachingSession, val: &[#updatable_column_ref<'_>]) -> ScyllaQueryResult {
                         #log_library::debug!("Updating table {} with vals {:#?} for row {:#?}", #table_name, val, self);
 
@@ -307,6 +329,7 @@ pub(crate) fn write<T: Transformer>(
             let delete_query = format!("delete from {} {}", table_name, where_clause);
 
             tokens_constants.extend(quote! {
+                /// The query to delete a unique row in the table
                 pub const #delete_constant: &str = #delete_query;
             });
 
@@ -315,6 +338,7 @@ pub(crate) fn write<T: Transformer>(
             // Delete query
             tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
+                    /// Returns a struct that can perform a single row deletion
                     pub fn #delete_fn_name_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
                         #serialize
 
@@ -326,6 +350,7 @@ pub(crate) fn write<T: Transformer>(
                             ))
                     }
 
+                    /// Performs a single row deletion
                     pub async fn #delete_fn_name(&self, session: &CachingSession) -> ScyllaQueryResult {
                         #log_library::debug!("Deleting a row from table {} with values {:#?}", #table_name, self);
 
@@ -357,6 +382,7 @@ fn create_select_unique<T: Transformer>(
 
         quote! {
             impl #primary_key_struct<'_> {
+                /// Returns a struct that can perform a unique row selection
                 pub fn #fn_name_qv(&self) -> Result<#transformer<#struct_ident>, SerializeValuesError> {
                     #serialize
 
@@ -367,6 +393,7 @@ fn create_select_unique<T: Transformer>(
                     }))
                 }
 
+                /// Performs the unique row selection
                 pub async fn #fn_name(&self, session: &CachingSession) -> Result<#return_type<#struct_ident>, SingleSelectQueryErrorTransform> {
                     #log_library::debug!("Selecting unique row for table {} with values: {:#?}", #table, self);
 

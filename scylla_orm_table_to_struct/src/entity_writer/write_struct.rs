@@ -49,25 +49,37 @@ pub(crate) fn write<T: Transformer>(
     let select_all_count_query = format!("select count(*) from {}", entity_writer.table.table_name);
 
     let mut tokens_constants = quote! {
+        /// The query to select all rows in the table
         pub const #select_all_constant: &str = #select_all_query;
+        /// The query to count all rows in the table
         pub const #select_all_count_constant: &str = #select_all_count_query;
     };
 
     let select_unique_expect = entity_writer.select_unique_expect();
 
     let mut tokens_type = quote! {
+        /// This is the struct which is generated from the table
+        /// If you want to perform CRUD operations, do the following:
+        ///     Create -> convert this struct to a borrowed struct
+        ///     Read, Update, Delete -> convert this struct to a borrowed primary key struct
+        /// When you converted this struct to the specified type, you will have methods available
+        /// for the things you want
         #meta_data
         pub struct #struct_name_ident {
             #field_ts
         }
 
         impl #struct_name_ident {
+            /// Create an borrowed primary key from the struct values
+            /// You can use this primary key struct to perform updates, deletions and selects on
+            /// a unique row
             pub fn #pk_struct_parameter(&self) -> #pk_struct_ref {
                 #pk_struct_ref {
                 #(#pk_fields: &self.#pk_fields),*
                 }
             }
 
+            /// Create an owned primary key from the struct values
             pub fn #primary_key_owned(self) -> #pk_struct {
                 #pk_struct {
                     #(#pk_fields: self.#pk_fields),*
@@ -75,6 +87,7 @@ pub(crate) fn write<T: Transformer>(
             }
         }
 
+        /// Returns a struct that can perform a query which counts the rows in this table
         pub fn #select_all_count_fn_name_qv() -> #select_unique_expect<scylla_orm::query_transform::Count, &'static str, &'static [u8; 0]> {
             #select_unique_expect::new(Qv {
                 query: #select_all_count_constant,
@@ -82,6 +95,7 @@ pub(crate) fn write<T: Transformer>(
             })
         }
 
+        /// Performs the count query
         pub async fn #select_all_count_fn_name(session: &CachingSession) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
             #select_all_count_fn_name_qv().select_count(session).await
         }
@@ -118,12 +132,17 @@ pub(crate) fn write<T: Transformer>(
     }
 
     tokens_type.extend(quote! {
+        /// A struct that contains borrowed values
+        /// This can be used to perform an insertion that is unique identified by the values of this struct
+        /// If you want to perform an update, deletion or select or a unique row, convert this
+        /// struct to the primary key struct
         #ref_metadata
         pub struct #struct_name_ref_ident<'a> {
             #(#struct_ref_fields)*
         }
 
         impl From<#struct_name_ref_ident<'_>> for #struct_name_ident {
+            /// Conversation method to go from a borrowed struct to an owned struct
             fn from(f: #struct_name_ref_ident<'_>) -> #struct_name_ident {
                 #struct_name_ident {
                     #(#from_ref)*
@@ -132,6 +151,7 @@ pub(crate) fn write<T: Transformer>(
         }
 
         impl #struct_name_ident {
+            /// Conversation method to go from an owned struct to a borrowed struct
             pub fn #to_ref_fn(&self) -> #struct_name_ref_ident {
                 #struct_name_ref_ident {
                     #(#to_ref)*
@@ -140,6 +160,7 @@ pub(crate) fn write<T: Transformer>(
         }
 
         impl<'a> #struct_name_ref_ident<'a> {
+            /// Conversation method to go from a borrowed struct to an owned struct
             pub fn #pk_struct_parameter(&self) -> #pk_struct_ref {
                 #pk_struct_ref {
                     #(#pk_fields: self.#pk_fields),*
@@ -159,6 +180,7 @@ pub(crate) fn write<T: Transformer>(
             );
 
             tokens_constants.extend(quote! {
+                /// The query to insert a unique row in the table
                 pub const #insert_query_const_name: &str = #insert_query;
             });
 
@@ -166,6 +188,7 @@ pub(crate) fn write<T: Transformer>(
             let insert_ttl_query = format!("{} using ttl ?", insert_query);
 
             tokens_constants.extend(quote! {
+                /// The query to insert a unique row in the table with a TTL
                 pub const #insert_ttl_query_const_name: &str = #insert_ttl_query;
             });
 
@@ -173,6 +196,7 @@ pub(crate) fn write<T: Transformer>(
             let truncate_query = format!("truncate {}", table_name);
 
             tokens_constants.extend(quote! {
+                /// The query truncate the whole table
                 pub const #truncate_query_const_name: &str = #truncate_query;
             });
 
@@ -194,6 +218,7 @@ pub(crate) fn write<T: Transformer>(
             let insert_ttl_qv = qv(&insert_ttl_fn_name);
 
             tokens_type.extend(quote! {
+                /// Returns a struct that can perform a truncate operation
                 pub fn #truncate_qv() -> #truncate<&'static str, &'static [u8; 0]> {
                     #truncate::new(Qv {
                         query: #truncate_constant,
@@ -201,11 +226,14 @@ pub(crate) fn write<T: Transformer>(
                     })
                 }
 
+                /// Performs a truncate
+                /// !This will delete all rows in the table!
                 pub async fn #truncate_fn_name(session: &CachingSession) -> ScyllaQueryResult {
                     #truncate_qv().truncate(session).await
                 }
 
                 impl <'a> #struct_name_ref_ident<'a> {
+                    /// Returns a struct that can perform an insert operation
                     pub fn #insert_qv(&self) -> Result<#insert, SerializeValuesError> {
                         let mut serialized = SerializedValues::with_capacity(#field_count);
 
@@ -218,12 +246,14 @@ pub(crate) fn write<T: Transformer>(
                         ))
                     }
 
+                    /// Performs an insert
                     pub async fn #insert_fn_name(&self, session: &CachingSession) -> ScyllaQueryResult {
                         #log_library::debug!("Inserting: {:#?}", self);
 
                         self.#insert_qv()?.insert(session).await
                     }
 
+                    /// Returns a struct that can perform an insert operation with a TTL
                     pub fn #insert_ttl_qv(&self, ttl: TtlType) -> Result<#insert, SerializeValuesError> {
                         let mut serialized = SerializedValues::with_capacity(#insert_with_ttl_values_len);
 
@@ -237,12 +267,14 @@ pub(crate) fn write<T: Transformer>(
                         }))
                     }
 
+                    /// Performs an insert with a TTL
                     pub async fn #insert_ttl_fn_name(&self, session: &CachingSession, ttl: TtlType) -> ScyllaQueryResult {
                         #log_library::debug!("Insert with ttl {}, {:#?}", ttl, self);
 
                         self.#insert_ttl_qv(ttl)?.insert(session).await
                     }
 
+                    /// Performs either an insertion or deletion, depending on the insert parameter
                     pub async fn #insert_or_delete(&self, session: &CachingSession, insert: bool) -> ScyllaQueryResult {
                         if insert {
                             self.#insert_fn_name(session).await
@@ -271,6 +303,7 @@ pub(crate) fn write<T: Transformer>(
             if !fields.is_empty() {
                 tokens_type.extend(quote! {
                     impl #struct_name_ident {
+                        /// Performs an update on the current struct based on the update parameter
                         pub fn #in_memory_update(&mut self, update: #updatable_column) {
                             match update {
                                 #(#updatable_column::#variants(val) => {
@@ -279,6 +312,7 @@ pub(crate) fn write<T: Transformer>(
                             }
                         }
 
+                        /// Performs multiple updates on the current struct
                         pub fn #in_memory_updates(&mut self, updates: Vec<#updatable_column>) {
                             for updatable_column in updates {
                                 self.#in_memory_update(updatable_column)
@@ -296,6 +330,10 @@ pub(crate) fn write<T: Transformer>(
                 let query = entity_writer.create_select_clause_table_table(&mv.base_table_name);
 
                 tokens_constants.extend(quote! {
+                    /// The query to select all rows in the table, based on the base table
+                    /// The order of the columns in the query are the same as the order of the columns in the base table
+                    /// This means that a query can be done in this materialized view table, but a free conversation
+                    /// can be done to a struct of the base table
                     pub const #select_all_constant: &str = #query;
                 });
 
@@ -326,6 +364,7 @@ fn create_select_all_query(
     let select_multiple_all_in_memory = all_in_memory(fn_name);
 
     quote! {
+        /// Returns a struct that can perform a selection of all rows in the database
         pub fn #select_multiple_qv() -> #select_multiple<#row_type, &'static str, &'static [u8; 0]> {
             #select_multiple::new(Qv {
                 query: #select_all_query,
@@ -333,10 +372,14 @@ fn create_select_all_query(
             })
         }
 
+        /// Returns a struct that can perform a selection of all rows in the database
+        /// with a specified page size
         pub async fn #fn_name(session: &CachingSession, page_size: Option<i32>) -> Result<TypedRowIterator<#row_type>, QueryError> {
             #select_multiple_qv().select(session, page_size).await
         }
 
+        /// Returns a struct that can perform a selection of all rows in the database
+        /// It will accumulate all rows in memory by sending paged queries
         pub async fn #select_multiple_all_in_memory(session: &CachingSession, page_size: i32) -> Result<QueryEntityVec<#row_type>, MultipleSelectQueryErrorTransform> {
             #select_multiple_qv().select_all_in_memory(session, page_size).await
         }

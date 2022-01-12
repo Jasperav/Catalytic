@@ -1,3 +1,6 @@
+/// This mod contains structs which are returned from the generated code
+/// The structs are quite specific in what they can do. This means you don't have generic 'execute'
+/// methods, but specific methods, like 'update', 'delete' etc
 use crate::Cursor;
 use futures_util::{StreamExt, TryStreamExt};
 use scylla::cql_to_rust::FromRowError;
@@ -15,11 +18,13 @@ pub type ScyllaQueryResult = Result<QueryResult, QueryError>;
 pub type CountType = i64;
 pub type TtlType = i32;
 
+/// The Count struct is returned when a count query is executed
 #[derive(scylla::FromRow, Debug, Clone, Copy, PartialEq)]
 pub struct Count {
     pub count: CountType,
 }
 
+/// This error can be thrown when a unique row is expected, but this wasn't the case
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum UniqueQueryRowTransformError {
     #[error("No rows in query result")]
@@ -30,20 +35,27 @@ pub enum UniqueQueryRowTransformError {
     FromRowError(FromRowError),
 }
 
+/// This error can be thrown when a row is queried, but an error occurred
 #[derive(Debug, Clone)]
 pub enum SingleSelectQueryErrorTransform {
     UniqueQueryRowTransformError(UniqueQueryRowTransformError),
     QueryError(QueryError),
 }
 
+/// This error can be thrown when multiple rows were queried, but an error occurred
 #[derive(Debug, Clone)]
 pub enum MultipleSelectQueryErrorTransform {
     FromRowError(FromRowError),
     QueryError(QueryError),
 }
 
+/// This is returned when a query successfully completed, were the query could have retrieved
+/// an arbitrary amount of entities
 pub struct QueryEntityVecResult<T> {
+    /// The queried rows
     pub entities: Vec<T>,
+    /// The rows variable will be always empty here
+    /// They are moved and transformed into the entities variable
     pub query_result: QueryResult,
 }
 
@@ -90,9 +102,12 @@ impl From<SerializeValuesError> for SingleSelectQueryErrorTransform {
     }
 }
 
+/// This is the result of a successfully queried unique row where the unique row is optional
 pub struct QueryResultUniqueRow<T> {
-    pub query_result: QueryResult,
     pub entity: Option<T>,
+    /// The rows variable will be always empty here
+    /// They are moved and transformed into the entity variable
+    pub query_result: QueryResult,
 }
 
 impl<T> Deref for QueryResultUniqueRow<T> {
@@ -141,9 +156,12 @@ impl<T: FromRow> QueryResultUniqueRow<T> {
     }
 }
 
+/// This is the result of a successfully queried unique row where the unique row is mandatory
 pub struct QueryResultUniqueRowExpect<T> {
-    pub query_result: QueryResult,
     pub entity: T,
+    /// The rows variable will be always empty here
+    /// They are moved and transformed into the entity variable
+    pub query_result: QueryResult,
 }
 
 impl<T> Deref for QueryResultUniqueRowExpect<T> {
@@ -231,7 +249,7 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
             .await?
             .map(|c| {
                 let row = c.map(T::from_row);
-                let transformed = row.map(|r| r.map(|c| transform(c)));
+                let transformed = row.map(|r| r.map(transform));
 
                 match transformed {
                     Ok(ok) => match ok {
