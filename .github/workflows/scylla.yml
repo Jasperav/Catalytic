@@ -11,7 +11,6 @@ env:
 
 jobs:
   build:
-    env:
     runs-on: ubuntu-latest
     # Locally scylla can be started like so: docker run --name scylla -p 19042:19042 -p 9042:9042 --rm scylladb/scylla
     services:
