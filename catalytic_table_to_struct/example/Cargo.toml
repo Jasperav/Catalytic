@@ -1,0 +1,32 @@
+[package]
+name = "example_project"
+version = "0.1.0"
+authors = ["Jasper Visser <jasperav@hotmail.com>"]
+edition = "2018"
+description = "Example dir for the ORM for Scylla, fully compatible with Apache Cassandra™"
+repository = "https://github.com/Jasperav/catalytic"
+readme = "../../README.md"
+keywords = ["database", "scylla", "cql", "cassandra"]
+categories = ["database"]
+license = "MIT"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+catalytic_table_to_struct = { version = "0.1", path = "../../catalytic_table_to_struct" }
+catalytic = { version = "0.1", path = "../../catalytic" }
+dotenv = "0.15"
+
+[dependencies]
+scylla = "0.3"
+tracing = "0.1"
+catalytic_macro = { version = "0.1", path = "../../catalytic_macro" }
+catalytic = { version = "0.1", path = "../../catalytic" }
+tokio = "*"
+serde_json = "1"
+serde = "1"
+uuid = "0.8"
+trybuild = "1"
+futures-util = "0.3"
+tracing-subscriber = "0.2"

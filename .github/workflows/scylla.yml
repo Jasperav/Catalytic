@@ -12,8 +12,6 @@ env:
 jobs:
   build:
     env:
-      # For some reason, the rust compiler output is different on CI than local, although same versions are used
-      TRYBUILD: overwrite
     runs-on: ubuntu-latest
     # Locally scylla can be started like so: docker run --name scylla -p 19042:19042 -p 9042:9042 --rm scylladb/scylla
     services:
@@ -30,7 +28,7 @@ jobs:
       - name: Install stable 1.55
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.57.0
+          toolchain: 1.58.0
           default: true
           components: rustfmt, clippy
       - name: Load .env file
