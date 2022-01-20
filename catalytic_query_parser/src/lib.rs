@@ -1,10 +1,10 @@
 use crate::extract_query_metadata::{replace_select_wildcard, test_query};
 use proc_macro2::TokenStream;
 
-use quote::quote;
 use catalytic::capitalizing::struct_name_to_table_name;
 use catalytic::materialized_view::query_materialized_view;
 use catalytic::query_metadata::{query_columns, QueryMetadata, QueryType};
+use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::parse_quote::ParseQuote;
 use syn::parse_str;

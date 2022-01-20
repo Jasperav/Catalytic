@@ -1,8 +1,8 @@
 use crate::transformer::{StructTable, Transformer};
 
+use catalytic::table_metadata::{ColumnInTable, ColumnKind, ColumnType};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use catalytic::table_metadata::{ColumnInTable, ColumnKind, ColumnType};
 
 #[derive(Clone)]
 pub struct Field {

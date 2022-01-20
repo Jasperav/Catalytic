@@ -1,8 +1,8 @@
 mod json;
 
-use proc_macro::TokenStream;
 use catalytic::query_metadata::QueryType;
 use catalytic_query_parser::Query;
+use proc_macro::TokenStream;
 use syn::parse_macro_input;
 use syn::DeriveInput;
 

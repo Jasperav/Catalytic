@@ -1,5 +1,4 @@
 use crate::crud::{extract_columns, extract_table_name, find_operation};
-use scylla::frame::value::SerializedValues;
 use catalytic::capitalizing::table_name_to_struct_name;
 use catalytic::env_property_reader::keyspace;
 use catalytic::query_metadata::{
@@ -7,6 +6,7 @@ use catalytic::query_metadata::{
 };
 use catalytic::runtime::{block_on, GLOBAL_CONNECTION};
 use catalytic::table_metadata::{ColumnInTable, ColumnType};
+use scylla::frame::value::SerializedValues;
 use std::collections::HashSet;
 
 /// Extract the query meta data from a query
