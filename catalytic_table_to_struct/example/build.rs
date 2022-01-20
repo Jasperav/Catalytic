@@ -7,7 +7,6 @@ use catalytic_table_to_struct::transformer::{StructField, StructTable, Transform
 fn main() {
     let _ = dotenv::dotenv();
 
-
     query(
         "create table if not exists person(name text, age int, email text, primary key((name), age))",
         &[],
