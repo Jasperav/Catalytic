@@ -252,7 +252,7 @@ mod test {
             PersonRef {
                 name: &name,
                 age: &index,
-                email: &"",
+                email: "",
             }
             .insert(&session)
             .await

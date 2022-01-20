@@ -149,7 +149,7 @@ impl<T: Transformer> EntityWriter<'_, T> {
             .struct_field_metadata
             .primary_key_fields
             .iter()
-            .map(|f| format!("{} = ?", f.ident.to_string()))
+            .map(|f| format!("{} = ?", f.ident))
             .collect::<Vec<_>>()
             .join(" and ");
 
