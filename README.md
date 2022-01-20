@@ -1,4 +1,4 @@
-# ScyllaDb/Cassandra Object-Relation Mapper
+# Catalytic: ScyllaDb/Cassandra Object-Relation Mapper
 
 [![Latest Version](https://img.shields.io/crates/v/scylla_orm.svg)](https://crates.io/crates/scylla_orm)
 [![Build Status](https://img.shields.io/github/workflow/status/jasperav/scylla_orm/Scylla/master)](https://github.com/jasperav/scylla_orm/actions)
