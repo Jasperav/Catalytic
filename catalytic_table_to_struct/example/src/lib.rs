@@ -17,11 +17,11 @@ mod test {
     use crate::generated::person::PersonRef;
     use crate::generated::Person;
     use crate::{MyJsonEnum, MyJsonType};
+    use catalytic::runtime::create_connection;
+    use catalytic_macro::{query, query_base_table};
     use futures_util::StreamExt;
     use scylla::frame::value::{SerializeValuesError, SerializedValues};
     use scylla::CachingSession;
-    use catalytic::runtime::create_connection;
-    use catalytic_macro::{query, query_base_table};
 
     #[tokio::test]
     async fn crud() {
