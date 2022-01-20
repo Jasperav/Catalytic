@@ -1,7 +1,0 @@
-error: proc macro panicked
- --> $DIR/non_existing_table.rs:4:5
-  |
-4 |     query!("select * from idontexist");
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  |
-  = help: message: Table 'idontexist' in keyspace 'test_keyspace_for_testing' does not exists (or does not have columns, which is useless)

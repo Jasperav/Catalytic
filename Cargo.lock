@@ -56,6 +56,61 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
+name = "catalytic"
+version = "0.1.0"
+dependencies = [
+ "futures-util",
+ "heck",
+ "once_cell",
+ "scylla",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "catalytic_macro"
+version = "0.1.0"
+dependencies = [
+ "catalytic",
+ "catalytic_query_parser",
+ "proc-macro2",
+ "proc_macro2_helper",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn",
+]
+
+[[package]]
+name = "catalytic_query_parser"
+version = "0.1.0"
+dependencies = [
+ "catalytic",
+ "catalytic_macro",
+ "catalytic_table_to_struct",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "scylla",
+ "syn",
+ "trybuild",
+ "uuid",
+]
+
+[[package]]
+name = "catalytic_table_to_struct"
+version = "0.1.0"
+dependencies = [
+ "catalytic",
+ "heck",
+ "proc-macro2",
+ "quote",
+ "scylla",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -123,12 +178,12 @@ checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 name = "example_project"
 version = "0.1.0"
 dependencies = [
+ "catalytic",
+ "catalytic_macro",
+ "catalytic_table_to_struct",
  "dotenv",
  "futures-util",
  "scylla",
- "scylla_orm",
- "scylla_orm_macro",
- "scylla_orm_table_to_struct",
  "serde",
  "serde_json",
  "tokio",
@@ -696,61 +751,6 @@ checksum = "13dc0caffb1274feb3df615e3260cb71a5a7a5d579adc49ba5544c87950a701c"
 dependencies = [
  "quote",
  "syn",
-]
-
-[[package]]
-name = "scylla_orm"
-version = "0.1.0"
-dependencies = [
- "futures-util",
- "heck",
- "once_cell",
- "scylla",
- "thiserror",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "scylla_orm_macro"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "proc_macro2_helper",
- "quote",
- "scylla_orm",
- "scylla_orm_query_parser",
- "serde",
- "serde_json",
- "syn",
-]
-
-[[package]]
-name = "scylla_orm_query_parser"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "regex",
- "scylla",
- "scylla_orm",
- "scylla_orm_macro",
- "scylla_orm_table_to_struct",
- "syn",
- "trybuild",
- "uuid",
-]
-
-[[package]]
-name = "scylla_orm_table_to_struct"
-version = "0.1.2"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "scylla",
- "scylla_orm",
 ]
 
 [[package]]

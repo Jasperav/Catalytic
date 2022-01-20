@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Test all" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="command" value="test --all -- --test-threads=1" />
-    <option name="workingDirectory" value="file://$PROJECT_DIR$/scylla_orm_query" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$/catalytic_query" />
     <option name="channel" value="DEFAULT" />
     <option name="requiredFeatures" value="true" />
     <option name="allFeatures" value="false" />

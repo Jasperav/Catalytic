@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "scylla_orm",
-    "scylla_orm_table_to_struct",
-    "scylla_orm_table_to_struct/example",
-    "scylla_orm_macro",
-    "scylla_orm_query_parser",
+    "catalytic",
+    "catalytic_table_to_struct",
+    "catalytic_table_to_struct/example",
+    "catalytic_macro",
+    "catalytic_query_parser",
 ]
