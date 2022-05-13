@@ -1,4 +1,4 @@
-use heck::{CamelCase, SnakeCase};
+use heck::{ToCamelCase, ToSnakeCase};
 
 pub fn table_name_to_struct_name(table_name: &str) -> String {
     table_name.to_camel_case()
