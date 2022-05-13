@@ -39,7 +39,7 @@ pub fn updatable_column_ref() -> Ident {
 }
 
 pub fn create_variant(ident: &Ident) -> Ident {
-    format_ident!("{}", ident.to_string().to_camel_case())
+    format_ident!("{}", ident.to_string().to_upper_camel_case())
 }
 
 pub fn update_dyn() -> Ident {
