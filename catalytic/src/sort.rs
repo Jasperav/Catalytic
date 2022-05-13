@@ -11,6 +11,8 @@ const NON_PK_PROPERTY_POSITION: i32 = 1_000_000;
 /// - 'clustering' second
 /// - 'regular' last
 /// Within above ordering/kind, it is sorting by position, from small to large
+/// clippy allow: not sure how to fix this at the caller side
+#[allow(clippy::ptr_arg)]
 pub(crate) fn sort_columns(c: &mut Vec<ColumnInTable>) {
     // Non primary key columns have the value '-1' for the position.
     // When generating Rust structs, non primary key columns will be the last properties.

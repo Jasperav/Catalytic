@@ -110,7 +110,7 @@ pub fn replace_select_wildcard(query: &str, columns: &[ColumnInTable]) -> String
 
     // Wildcard should not be used: https://github.com/scylladb/scylla-rust-driver/issues/151
     if query.starts_with("select *") {
-        query.replacen("*", &columns_separated, 1)
+        query.replacen('*', &columns_separated, 1)
     } else {
         query.to_string()
     }

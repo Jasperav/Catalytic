@@ -19,7 +19,7 @@ pub fn extract_table_name<'a, S: AsRef<str>>(query: &'a S, crud: &dyn Operation)
         + crud.table_name_after().len()
         - 1;
     let suffix = &query.as_ref()[index + 1..];
-    let end = suffix.find(' ').unwrap_or_else(|| suffix.len());
+    let end = suffix.find(' ').unwrap_or(suffix.len());
 
     &suffix[..end]
 }
@@ -55,7 +55,7 @@ pub fn split_query(q: &str) -> (&str, &str) {
         query = &query[..i]
     }
 
-    let where_clause = query.find(" where ").unwrap_or_else(|| query.len());
+    let where_clause = query.find(" where ").unwrap_or(query.len());
 
     (query, &query[..where_clause])
 }
@@ -103,7 +103,7 @@ pub fn columns_after_where(query: &str) -> Vec<ColumnInQuery> {
             Some((index, operator)) => {
                 let and = " and ";
                 let val = &suffix[suffix.find(operator).unwrap() + operator.len()
-                    ..suffix.find(and).unwrap_or_else(|| suffix.len())];
+                    ..suffix.find(and).unwrap_or(suffix.len())];
 
                 let cv = ColumnInQuery {
                     column_name: suffix[..index].to_string(),
