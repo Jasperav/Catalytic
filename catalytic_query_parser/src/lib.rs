@@ -37,7 +37,7 @@ impl Query {
         let struct_prefix = std::env::var("GENERATED_DB_ENTITIES_PATH_PREFIX")
             .expect("Please provide the struct prefix, e.g.: 'crate::entities' for environment variable GENERATED_DB_ENTITIES_PATH_PREFIX")
             // It ends sometimes with a newline
-            .replace("\n", "");
+            .replace('\n', "");
         let path_to_struct = format!("{}::{}", struct_prefix, self.qmd.struct_name);
         let struct_name: TokenStream = path_to_struct.parse().unwrap();
         let serialized_values = &self.serialized_values;

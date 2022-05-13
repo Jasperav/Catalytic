@@ -1,6 +1,6 @@
 [package]
 name = "catalytic_query_parser"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jasper Visser <jasperav@hotmail.com>"]
 edition = "2018"
 description = "Query parser for the ORM for Scylla, fully compatible with Apache Cassandra™"
@@ -15,14 +15,14 @@ license = "MIT"
 
 [dev-dependencies]
 catalytic_macro = { path = "../catalytic_macro" }
-trybuild = "1"
+trybuild = "1.0.61"
 
 [dependencies]
-scylla = "0.3"
-quote = "1"
-syn = { version = "1", features = ["full", "extra-traits"] }
+scylla = "0.4.5"
+quote = "1.0.18"
+syn = { version = "1.0.94", features = ["full", "extra-traits"] }
 catalytic = { version = "0.1", path = "../catalytic" }
-proc-macro2 = "1"
-uuid = "0.8"
-regex = "1"
+proc-macro2 = "1.0.38"
+uuid = "1.0.0"
+regex = "1.5.5"
 catalytic_table_to_struct = { version = "0.1", path = "../catalytic_table_to_struct" }

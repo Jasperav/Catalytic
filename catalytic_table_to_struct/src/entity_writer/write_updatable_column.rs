@@ -1,4 +1,4 @@
-use heck::CamelCase;
+use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
@@ -27,7 +27,7 @@ pub(crate) fn write<T: Transformer>(entity_writer: &'_ EntityWriter<T>) -> Token
     let mut get_updatable_column = vec![];
 
     for field in &entity_writer.struct_field_metadata.non_primary_key_fields {
-        let variant_name = format_ident!("{}", field.ident.to_string().to_camel_case());
+        let variant_name = format_ident!("{}", field.ident.to_string().to_upper_camel_case());
         let ty = &field.ty;
         let borrow_ty = &field.borrow_ty;
         let to_ref = &field.from_borrow_to_owned;

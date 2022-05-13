@@ -1,7 +1,7 @@
-use heck::{CamelCase, SnakeCase};
+use heck::{ToSnakeCase, ToUpperCamelCase};
 
 pub fn table_name_to_struct_name(table_name: &str) -> String {
-    table_name.to_camel_case()
+    table_name.to_upper_camel_case()
 }
 
 pub fn struct_name_to_table_name(struct_name: &str) -> String {

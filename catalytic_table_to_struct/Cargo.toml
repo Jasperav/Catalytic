@@ -1,6 +1,6 @@
 [package]
 name = "catalytic_table_to_struct"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 authors = ["Jasper Visser <jasperav@hotmail.com>"]
 description = "Table mapper for the ORM for Scylla, fully compatible with Apache Cassandra™"
@@ -14,8 +14,8 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-scylla = "0.3"
+scylla = "0.4.5"
 catalytic = { version = "0.1", path = "../catalytic" }
-proc-macro2 = "1"
-quote = "1"
-heck = "0.3"
+proc-macro2 = "1.0.38"
+quote = "1.0.18"
+heck = "0.4.0"
