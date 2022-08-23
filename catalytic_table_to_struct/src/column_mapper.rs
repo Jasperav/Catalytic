@@ -85,7 +85,11 @@ pub(crate) fn column_to_property(
         } else {
             let ty = ColumnType::new(column.data_type.as_str()).to_ty();
             let (borrow_ty, from_borrow_to_owned) = if column.data_type.as_str() == "text" {
-                ("str".to_string(), "to_string()".to_string())
+                if struct_field.is_nullable {
+                    (ty.clone(), clone)
+                } else {
+                    ("str".to_string(), "to_string()".to_string())
+                }
             } else {
                 (ty.clone(), clone)
             };
