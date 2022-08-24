@@ -13,20 +13,19 @@ use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
 use scylla::CachingSession;
 #[doc = r" The query to select all rows in the table"]
-pub const SELECT_ALL_QUERY: &str = "select birthday, enum_json, json, json_nullable from child";
+pub const SELECT_ALL_QUERY: &str =
+    "select birthday, enum_json, json, json_nullable, text_nullable from child";
 #[doc = r" The query to count all rows in the table"]
 pub const SELECT_ALL_COUNT_QUERY: &str = "select count(*) from child";
 #[doc = r" The query to insert a unique row in the table"]
-pub const INSERT_QUERY: &str =
-    "insert into child(birthday, enum_json, json, json_nullable) values (?, ?, ?, ?)";
+pub const INSERT_QUERY : & str = "insert into child(birthday, enum_json, json, json_nullable, text_nullable) values (?, ?, ?, ?, ?)" ;
 #[doc = r" The query to insert a unique row in the table with a TTL"]
-pub const INSERT_TTL_QUERY: &str =
-    "insert into child(birthday, enum_json, json, json_nullable) values (?, ?, ?, ?) using ttl ?";
+pub const INSERT_TTL_QUERY : & str = "insert into child(birthday, enum_json, json, json_nullable, text_nullable) values (?, ?, ?, ?, ?) using ttl ?" ;
 #[doc = r" The query truncate the whole table"]
 pub const TRUNCATE_QUERY: &str = "truncate child";
 #[doc = r" The query to retrieve a unique row in this table"]
 pub const SELECT_UNIQUE_QUERY: &str =
-    "select birthday, enum_json, json, json_nullable from child where birthday = ?";
+    "select birthday, enum_json, json, json_nullable, text_nullable from child where birthday = ?";
 #[doc = "The query to update column enum_json"]
 pub const UPDATE_ENUM_JSON_QUERY: &str = "update child set enum_json = ? where birthday = ?";
 #[doc = "The query to update column json"]
@@ -34,6 +33,9 @@ pub const UPDATE_JSON_QUERY: &str = "update child set json = ? where birthday = 
 #[doc = "The query to update column json_nullable"]
 pub const UPDATE_JSON_NULLABLE_QUERY: &str =
     "update child set json_nullable = ? where birthday = ?";
+#[doc = "The query to update column text_nullable"]
+pub const UPDATE_TEXT_NULLABLE_QUERY: &str =
+    "update child set text_nullable = ? where birthday = ?";
 #[doc = r" The query to delete a unique row in the table"]
 pub const DELETE_QUERY: &str = "delete from child where birthday = ?";
 #[doc = r" This is the struct which is generated from the table"]
@@ -54,6 +56,7 @@ pub struct Child {
     pub json: crate::MyJsonType,
     #[json]
     pub json_nullable: std::option::Option<crate::MyJsonType>,
+    pub text_nullable: std::option::Option<String>,
 }
 impl Child {
     #[doc = r" Create an borrowed primary key from the struct values"]
@@ -120,6 +123,7 @@ pub struct ChildRef<'a> {
     pub enum_json: &'a crate::MyJsonEnum,
     pub json: &'a crate::MyJsonType,
     pub json_nullable: &'a std::option::Option<crate::MyJsonType>,
+    pub text_nullable: &'a std::option::Option<String>,
 }
 impl From<ChildRef<'_>> for Child {
     #[doc = r" Conversation method to go from a borrowed struct to an owned struct"]
@@ -129,6 +133,7 @@ impl From<ChildRef<'_>> for Child {
             enum_json: f.enum_json.clone(),
             json: f.json.clone(),
             json_nullable: f.json_nullable.clone(),
+            text_nullable: f.text_nullable.clone(),
         }
     }
 }
@@ -140,6 +145,7 @@ impl Child {
             enum_json: &self.enum_json,
             json: &self.json,
             json_nullable: &self.json_nullable,
+            text_nullable: &self.text_nullable,
         }
     }
 }
@@ -166,11 +172,12 @@ pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
 impl<'a> ChildRef<'a> {
     #[doc = r" Returns a struct that can perform an insert operation"]
     pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::with_capacity(4usize);
+        let mut serialized = SerializedValues::with_capacity(5usize);
         serialized.add_value(&self.birthday)?;
         serialized.add_value(&self.enum_json)?;
         serialized.add_value(&self.json)?;
         serialized.add_value(&self.json_nullable)?;
+        serialized.add_value(&self.text_nullable)?;
         Ok(Insert::new(Qv {
             query: INSERT_QUERY,
             values: serialized,
@@ -183,11 +190,12 @@ impl<'a> ChildRef<'a> {
     }
     #[doc = r" Returns a struct that can perform an insert operation with a TTL"]
     pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::with_capacity(5usize);
+        let mut serialized = SerializedValues::with_capacity(6usize);
         serialized.add_value(&self.birthday)?;
         serialized.add_value(&self.enum_json)?;
         serialized.add_value(&self.json)?;
         serialized.add_value(&self.json_nullable)?;
+        serialized.add_value(&self.text_nullable)?;
         serialized.add_value(&ttl)?;
         Ok(Insert::new(Qv {
             query: INSERT_TTL_QUERY,
@@ -224,6 +232,9 @@ impl Child {
             }
             UpdatableColumn::JsonNullable(val) => {
                 self.json_nullable = val;
+            }
+            UpdatableColumn::TextNullable(val) => {
+                self.text_nullable = val;
             }
         }
     }
@@ -402,6 +413,35 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
+    #[doc = "Returns a struct that can perform an update operation for column text_nullable"]
+    pub fn update_text_nullable_qv(
+        &self,
+        val: &std::option::Option<String>,
+    ) -> Result<Update, SerializeValuesError> {
+        let mut serialized_values = SerializedValues::with_capacity(2usize);
+        serialized_values.add_value(&val)?;
+        serialized_values.add_value(&self.birthday)?;
+        Ok(Update::new(Qv {
+            query: UPDATE_TEXT_NULLABLE_QUERY,
+            values: serialized_values,
+        }))
+    }
+    #[doc = "Performs an update operation for column text_nullable"]
+    pub async fn update_text_nullable(
+        &self,
+        session: &CachingSession,
+        val: &std::option::Option<String>,
+    ) -> ScyllaQueryResult {
+        tracing::debug!(
+            "Updating table {} with val {:#?} for row {:#?}",
+            "child",
+            val,
+            self
+        );
+        self.update_text_nullable_qv(val)?.update(session).await
+    }
+}
+impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform an update on a dynamic updatable column"]
     pub fn update_dyn_qv(
         &self,
@@ -411,6 +451,7 @@ impl PrimaryKeyRef<'_> {
             UpdatableColumnRef::EnumJson(val) => self.update_enum_json_qv(val),
             UpdatableColumnRef::Json(val) => self.update_json_qv(val),
             UpdatableColumnRef::JsonNullable(val) => self.update_json_nullable_qv(val),
+            UpdatableColumnRef::TextNullable(val) => self.update_text_nullable_qv(val),
         }
     }
     #[doc = r" Performs the dynamic update"]
@@ -445,6 +486,10 @@ impl PrimaryKeyRef<'_> {
                 }
                 UpdatableColumnRef::JsonNullable(v) => {
                     query.push(concat!(stringify!(json_nullable), " = ?"));
+                    serialized_values.add_value(v)?;
+                }
+                UpdatableColumnRef::TextNullable(v) => {
+                    query.push(concat!(stringify!(text_nullable), " = ?"));
                     serialized_values.add_value(v)?;
                 }
             }
@@ -502,6 +547,7 @@ pub enum UpdatableColumn {
     EnumJson(crate::MyJsonEnum),
     Json(crate::MyJsonType),
     JsonNullable(std::option::Option<crate::MyJsonType>),
+    TextNullable(std::option::Option<String>),
 }
 impl UpdatableColumn {
     #[doc = r" Conversation method to go from an owned updatable column struct to a borrowed updatable column struct"]
@@ -510,6 +556,7 @@ impl UpdatableColumn {
             UpdatableColumn::EnumJson(v) => UpdatableColumnRef::EnumJson(v),
             UpdatableColumn::Json(v) => UpdatableColumnRef::Json(v),
             UpdatableColumn::JsonNullable(v) => UpdatableColumnRef::JsonNullable(v),
+            UpdatableColumn::TextNullable(v) => UpdatableColumnRef::TextNullable(v),
         }
     }
 }
@@ -521,6 +568,7 @@ pub enum UpdatableColumnRef<'a> {
     EnumJson(&'a crate::MyJsonEnum),
     Json(&'a crate::MyJsonType),
     JsonNullable(&'a std::option::Option<crate::MyJsonType>),
+    TextNullable(&'a std::option::Option<String>),
 }
 pub trait UpdatableColumnVec {
     fn to_ref(&self) -> Vec<UpdatableColumnRef<'_>>;
@@ -538,6 +586,7 @@ impl From<UpdatableColumnRef<'_>> for UpdatableColumn {
             UpdatableColumnRef::EnumJson(v) => UpdatableColumn::EnumJson(v.clone()),
             UpdatableColumnRef::Json(v) => UpdatableColumn::Json(v.clone()),
             UpdatableColumnRef::JsonNullable(v) => UpdatableColumn::JsonNullable(v.clone()),
+            UpdatableColumnRef::TextNullable(v) => UpdatableColumn::TextNullable(v.clone()),
         }
     }
 }
@@ -559,5 +608,9 @@ impl Child {
     #[doc = "Creates the updatable column json_nullable which can be used to update it in the database"]
     pub fn updatable_column_json_nullable(&self) -> UpdatableColumnRef {
         UpdatableColumnRef::JsonNullable(&self.json_nullable)
+    }
+    #[doc = "Creates the updatable column text_nullable which can be used to update it in the database"]
+    pub fn updatable_column_text_nullable(&self) -> UpdatableColumnRef {
+        UpdatableColumnRef::TextNullable(&self.text_nullable)
     }
 }

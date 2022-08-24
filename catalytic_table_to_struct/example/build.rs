@@ -19,7 +19,7 @@ fn main() {
             primary key ((email), name, age)",
         &[],
     );
-    query("create table if not exists child(birthday int, json text, json_nullable text, enum_json text, primary key((birthday)))", &[]);
+    query("create table if not exists child(birthday int, json text, json_nullable text, text_nullable text, enum_json text, primary key((birthday)))", &[]);
 
     create_test_tables();
 
