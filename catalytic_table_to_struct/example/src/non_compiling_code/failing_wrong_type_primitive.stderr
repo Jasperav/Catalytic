@@ -4,10 +4,14 @@ error[E0277]: the trait bound `i32: From<&str>` is not satisfied
    |     query!("select * from test_table where b = ? and c = ?", b, b);
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `From<&str>` is not implemented for `i32`
    |
-   = help: the following implementations were found:
-             <i32 as From<NonZeroI32>>
-             <i32 as From<bool>>
-             <i32 as From<i16>>
-             <i32 as From<i8>>
-           and 76 others
+   = help: the following other types implement trait `From<T>`:
+             <f32 as From<i16>>
+             <f32 as From<i8>>
+             <f32 as From<u16>>
+             <f32 as From<u8>>
+             <f64 as From<f32>>
+             <f64 as From<i16>>
+             <f64 as From<i32>>
+             <f64 as From<i8>>
+           and 72 others
    = note: this error originates in the macro `query` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -19,7 +19,7 @@ pub type CountType = i64;
 pub type TtlType = i32;
 
 /// The Count struct is returned when a count query is executed
-#[derive(scylla::FromRow, Debug, Clone, Copy, PartialEq)]
+#[derive(scylla::FromRow, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Count {
     pub count: CountType,
 }

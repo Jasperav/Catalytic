@@ -4,7 +4,7 @@ use crate::sort::sort_columns;
 use crate::table_metadata::{ColumnInTable, ColumnType};
 
 /// Meta data of a query
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub struct QueryMetadata {
     /// The query that will be send to the server
     pub query: String,
@@ -22,19 +22,19 @@ pub struct QueryMetadata {
     pub ttl: Option<Ttl>,
 }
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Eq)]
 pub enum Ttl {
     Parameterized,
     Fixed(i32),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub struct ParameterizedColumnType {
     pub column_type: ColumnType,
     pub value: ParameterizedValue,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub enum ParameterizedValue {
     ExtractedColumn(ColumnInQuery),
     UsingTtl,
@@ -42,7 +42,7 @@ pub enum ParameterizedValue {
 }
 
 /// The different types of a query
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Eq)]
 pub enum QueryType {
     /// Select multiple rows
     SelectMultiple,
@@ -66,7 +66,7 @@ pub enum QueryType {
 }
 
 /// Represents a column that is used in a query
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ColumnInQuery {
     pub column_name: String,
     /// If true, the column is assigned a question mark (... where a = ?)

@@ -2,10 +2,10 @@ use crate::entity_writer::EntityWriter;
 use crate::query_ident::{
     all_in_memory, base_table, base_table_query, create_variant, delete_fn_name, in_memory_update,
     in_memory_updates, insert_constant, insert_fn_name, insert_or_delete_fn_name,
-    insert_ttl_constant, insert_ttl_fn_name, primary_key_owned, primary_key_struct,
-    primary_key_struct_parameter, primary_key_struct_ref, qv, select_all_constant,
-    select_all_count_constant, select_all_count_fn_name, select_all_fn_name, struct_ref, to_ref,
-    truncate_constant, truncate_fn_name, updatable_column,
+    insert_ttl_constant, insert_ttl_fn_name, into_primary_key_owned, primary_key_owned,
+    primary_key_struct, primary_key_struct_parameter, primary_key_struct_ref, qv,
+    select_all_constant, select_all_count_constant, select_all_count_fn_name, select_all_fn_name,
+    struct_ref, to_ref, truncate_constant, truncate_fn_name, updatable_column,
 };
 use crate::transformer::Transformer;
 use proc_macro2::{Ident, TokenStream};
@@ -23,6 +23,7 @@ pub(crate) fn write<T: Transformer>(
     let field_ts = &entity_writer.struct_field_metadata.field_ts;
 
     let primary_key_owned = primary_key_owned();
+    let into_primary_key_owned = into_primary_key_owned();
     let pk_struct = primary_key_struct();
 
     let pk_struct_ref = primary_key_struct_ref();
@@ -79,8 +80,13 @@ pub(crate) fn write<T: Transformer>(
                 }
             }
 
-            /// Create an owned primary key from the struct values
-            pub fn #primary_key_owned(self) -> #pk_struct {
+            /// Create an owned primary key from the struct values, it will actually clone the values if needed
+            pub fn #primary_key_owned(&self) -> #pk_struct {
+                self.primary_key().into_owned()
+            }
+
+            /// Create an owned primary key from the struct values without cloning
+            pub fn #into_primary_key_owned(self) -> #pk_struct {
                 #pk_struct {
                     #(#pk_fields: self.#pk_fields),*
                 }

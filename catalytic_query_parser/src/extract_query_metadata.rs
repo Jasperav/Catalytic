@@ -5,8 +5,8 @@ use catalytic::query_metadata::{
     query_columns, ColumnInQuery, ParameterizedColumnType, ParameterizedValue, QueryMetadata, Ttl,
 };
 use catalytic::runtime::{block_on, GLOBAL_CONNECTION};
+use catalytic::scylla::frame::value::SerializedValues;
 use catalytic::table_metadata::{ColumnInTable, ColumnType};
-use scylla::frame::value::SerializedValues;
 use std::collections::HashSet;
 
 /// Extract the query meta data from a query

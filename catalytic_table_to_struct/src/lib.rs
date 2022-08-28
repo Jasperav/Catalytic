@@ -24,7 +24,7 @@ pub mod transformer;
 
 pub const GENERATED: &str = "generated";
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Eq)]
 pub struct Table {
     pub table_name: String,
     pub materialized_view: Option<MaterializedView>,

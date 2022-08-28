@@ -6,6 +6,7 @@ use catalytic::query_transform::{
     SelectMultiple, SelectUnique, SelectUniqueExpect, SingleSelectQueryErrorTransform, Truncate,
     TtlType, Update,
 };
+use catalytic::scylla;
 #[allow(unused_imports)]
 use scylla::frame::value::SerializeValuesError;
 use scylla::frame::value::SerializedValues;
@@ -60,8 +61,12 @@ impl AnotherTestTable {
             c: &self.c,
         }
     }
-    #[doc = r" Create an owned primary key from the struct values"]
-    pub fn primary_key_owned(self) -> PrimaryKey {
+    #[doc = r" Create an owned primary key from the struct values, it will actually clone the values if needed"]
+    pub fn primary_key_owned(&self) -> PrimaryKey {
+        self.primary_key().into_owned()
+    }
+    #[doc = r" Create an owned primary key from the struct values without cloning"]
+    pub fn into_primary_key_owned(self) -> PrimaryKey {
         PrimaryKey {
             a: self.a,
             b: self.b,
