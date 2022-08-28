@@ -14,7 +14,7 @@ pub struct MaterializedViewFromDb {
 }
 
 /// Detailed information about a materialized view
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct MaterializedView {
     /// The corresponding Rust struct name where this materialized view should belong to
     pub struct_name: String,

@@ -1,11 +1,16 @@
+#[allow(clippy::derive_partial_eq_without_eq)]
 pub mod generated;
 
-#[derive(Clone, catalytic_macro::Json, serde::Serialize, serde::Deserialize, Debug, PartialEq)]
+#[derive(
+    Clone, catalytic_macro::Json, serde::Serialize, serde::Deserialize, Debug, Eq, PartialEq,
+)]
 pub struct MyJsonType {
     pub age: i32,
 }
 
-#[derive(Clone, catalytic_macro::Json, serde::Serialize, serde::Deserialize, Debug, PartialEq)]
+#[derive(
+    Clone, catalytic_macro::Json, serde::Serialize, serde::Deserialize, Debug, Eq, PartialEq,
+)]
 pub enum MyJsonEnum {
     Something,
     SomethingElse,
@@ -13,12 +18,12 @@ pub enum MyJsonEnum {
 
 #[cfg(test)]
 mod test {
-    use catalytic::scylla;
     use crate::generated::child::{truncate, Child};
     use crate::generated::person::PersonRef;
     use crate::generated::Person;
     use crate::{MyJsonEnum, MyJsonType};
     use catalytic::runtime::create_connection;
+    use catalytic::scylla;
     use catalytic_macro::{query, query_base_table};
     use futures_util::StreamExt;
     use scylla::frame::value::{SerializeValuesError, SerializedValues};

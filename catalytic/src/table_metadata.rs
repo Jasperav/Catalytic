@@ -1,5 +1,5 @@
 /// The type of the column
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Eq)]
 pub enum ColumnKind {
     /// Column is part of the partition key
     PartitionKey,
@@ -62,7 +62,7 @@ pub struct TableName {
 }
 
 /// Supported type, not every type is supported due to https://github.com/scylladb/scylla-rust-driver/issues/104
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub enum ColumnType {
     TinyInt,
     SmallInt,

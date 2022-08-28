@@ -10,6 +10,10 @@ pub fn primary_key_owned() -> Ident {
     format_ident!("primary_key_owned")
 }
 
+pub fn into_primary_key_owned() -> Ident {
+    format_ident!("into_primary_key_owned")
+}
+
 pub fn primary_key_struct_ref() -> Ident {
     struct_ref(&primary_key_struct())
 }

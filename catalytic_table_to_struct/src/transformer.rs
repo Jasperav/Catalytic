@@ -2,7 +2,7 @@ use crate::Table;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Eq)]
 pub struct StructTable {
     pub table: Table,
     pub struct_name: String,
