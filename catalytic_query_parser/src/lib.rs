@@ -206,7 +206,7 @@ impl Parse for Query {
             .collect::<Vec<syn::Type>>();
 
         let serialized_values = quote! {{
-            let mut serialized_values = scylla::frame::value::SerializedValues::with_capacity(#ident_count);
+            let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::with_capacity(#ident_count);
 
             #(
                 // Check if the type is correct
