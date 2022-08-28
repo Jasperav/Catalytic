@@ -6,6 +6,7 @@ use catalytic::query_transform::{
     SelectMultiple, SelectUnique, SelectUniqueExpect, SingleSelectQueryErrorTransform, Truncate,
     TtlType, Update,
 };
+use catalytic::scylla;
 #[allow(unused_imports)]
 use scylla::frame::value::SerializeValuesError;
 use scylla::frame::value::SerializedValues;

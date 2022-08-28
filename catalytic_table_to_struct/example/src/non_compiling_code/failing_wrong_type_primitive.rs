@@ -1,3 +1,4 @@
+use catalytic::scylla;
 use catalytic_macro::query;
 
 mod generated {

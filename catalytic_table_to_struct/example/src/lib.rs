@@ -13,6 +13,7 @@ pub enum MyJsonEnum {
 
 #[cfg(test)]
 mod test {
+    use catalytic::scylla;
     use crate::generated::child::{truncate, Child};
     use crate::generated::person::PersonRef;
     use crate::generated::Person;

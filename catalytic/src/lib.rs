@@ -1,5 +1,3 @@
-use scylla::Bytes;
-
 pub mod capitalizing;
 pub mod env_property_reader;
 pub mod materialized_view;
@@ -9,4 +7,7 @@ pub mod runtime;
 mod sort;
 pub mod table_metadata;
 
-pub type Cursor = Option<Bytes>;
+// Re-export the scylla library so clients do not have to depend on that
+pub use scylla;
+
+pub type Cursor = Option<scylla::Bytes>;

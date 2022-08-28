@@ -1,7 +1,7 @@
 error: proc macro panicked
- --> src/non_compiling_code/non_complete_insert.rs:6:5
+ --> src/non_compiling_code/non_complete_insert.rs
   |
-6 |     query!("insert into test_table (b, c, d, a) values (2, 3, 4, 5)");
+  |     query!("insert into test_table (b, c, d, a) values (2, 3, 4, 5)");
   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   |
   = help: message: Insert query is missing values

@@ -19,7 +19,6 @@ catalytic = { version = "0.1", path = "../../catalytic" }
 dotenv = "0.15.0"
 
 [dependencies]
-scylla = "0.4.5"
 tracing = "0.1.34"
 catalytic_macro = { version = "0.1", path = "../../catalytic_macro" }
 catalytic = { version = "0.1", path = "../../catalytic" }

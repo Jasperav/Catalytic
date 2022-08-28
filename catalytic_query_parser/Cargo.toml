@@ -18,7 +18,6 @@ catalytic_macro = { path = "../catalytic_macro" }
 trybuild = "1.0.61"
 
 [dependencies]
-scylla = "0.4.5"
 quote = "1.0.18"
 syn = { version = "1.0.94", features = ["full", "extra-traits"] }
 catalytic = { version = "0.1", path = "../catalytic" }
