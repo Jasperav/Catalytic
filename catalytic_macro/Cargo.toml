@@ -1,6 +1,6 @@
 [package]
 name = "catalytic_macro"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2018"
 authors = ["Jasper Visser <jasperav@hotmail.com>"]
 description = "Macros for the ORM for Scylla, fully compatible with Apache Cassandra™"
