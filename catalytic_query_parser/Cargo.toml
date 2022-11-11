@@ -3,6 +3,7 @@ name = "catalytic_query_parser"
 description = "Query parser for the ORM for Scylla, fully compatible with Apache Cassandra™"
 edition.workspace = true
 version.workspace = true
+license.workspace = true
 
 [dev-dependencies]
 catalytic_macro = { path = "../catalytic_macro" }

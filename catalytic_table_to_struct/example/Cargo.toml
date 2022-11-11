@@ -4,6 +4,7 @@ description = "Example dir for the ORM for Scylla, fully compatible with Apache 
 readme = "../../README.md"
 edition.workspace = true
 version.workspace = true
+license.workspace = true
 
 [build-dependencies]
 catalytic_table_to_struct = { version = "0.1", path = "../../catalytic_table_to_struct" }

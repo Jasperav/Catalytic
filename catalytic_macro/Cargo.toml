@@ -3,6 +3,7 @@ name = "catalytic_macro"
 description = "Macros for the ORM for Scylla, fully compatible with Apache Cassandra™"
 edition.workspace = true
 version.workspace = true
+license.workspace = true
 
 [lib]
 proc-macro = true
