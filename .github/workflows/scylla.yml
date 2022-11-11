@@ -27,7 +27,7 @@ jobs:
       - name: Install stable 1.63
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.63.0
+          toolchain: 1.65.0
           default: true
           components: rustfmt, clippy
       - name: Load .env file
