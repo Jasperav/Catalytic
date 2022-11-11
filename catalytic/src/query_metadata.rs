@@ -84,7 +84,7 @@ pub fn query_columns(table: &str) -> Vec<ColumnInTable> {
     // Not sure if this works with parameters ('?')
     let query = format!("select column_name, kind, position, type as data_type from system_schema.columns where keyspace_name = '{}' and table_name = '{}'", keyspace(), table.to_lowercase());
 
-    let mut collected = query_collect_to_vec(query, &[]);
+    let mut collected = query_collect_to_vec(query, []);
 
     sort_columns(&mut collected);
 

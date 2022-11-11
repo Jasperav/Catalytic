@@ -35,7 +35,7 @@ pub fn query_for_materialized_view() -> String {
 
 /// Queries all the materialized views from the database
 pub fn query_materialized_views() -> Vec<MaterializedViewFromDb> {
-    query_collect_to_vec(query_for_materialized_view(), &[])
+    query_collect_to_vec(query_for_materialized_view(), [])
 }
 
 /// Queries a specific materialized view, and gives back information about the materialized view
@@ -45,7 +45,7 @@ pub fn query_materialized_view(table_name: &str) -> Option<MaterializedView> {
         query_for_materialized_view(),
         table_name
     );
-    let mut rows: Vec<MaterializedViewFromDb> = query_collect_to_vec(query, &[]);
+    let mut rows: Vec<MaterializedViewFromDb> = query_collect_to_vec(query, []);
 
     if rows.is_empty() {
         return None;
@@ -88,7 +88,7 @@ mod test {
         let drop_mv = || {
             query(
                 format!("drop materialized view if exists {}", test_table_mv),
-                &[],
+                [],
             );
         };
 
@@ -107,7 +107,7 @@ mod test {
                                 select {}
                                 from {}
                                 where b is not null and c is not null and a is not null and d is not null
-                                primary key ((b), c, d, a)", &test_table_mv, select, TEST_TABLE), &[]);
+                                primary key ((b), c, d, a)", &test_table_mv, select, TEST_TABLE), []);
         };
 
         let mv_inf = |same_columns| MaterializedView {

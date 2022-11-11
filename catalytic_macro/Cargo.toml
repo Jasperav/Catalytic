@@ -1,6 +1,6 @@
 [package]
 name = "catalytic_macro"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2018"
 authors = ["Jasper Visser <jasperav@hotmail.com>"]
 description = "Macros for the ORM for Scylla, fully compatible with Apache Cassandra™"
@@ -17,11 +17,11 @@ license = "MIT"
 proc-macro = true
 
 [dependencies]
-syn = { version = "1.0.94", features = ["full", "extra-traits"] }
-quote = "1.0.18"
 catalytic_query_parser = { version = "0.1", path = "../catalytic_query_parser" }
 catalytic = { version = "0.1", path = "../catalytic" }
-proc-macro2 = "1.0.38"
-serde = { version = "1.0.137", features = ["derive"] }
-serde_json = "1.0.81"
-proc_macro2_helper = "0.2.9"
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+proc_macro2_helper = { workspace = true }

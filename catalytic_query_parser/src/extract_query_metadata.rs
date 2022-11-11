@@ -391,7 +391,7 @@ mod query_tests {
     fn test_uuid() {
         query(
             "create table if not exists UUIDTable(u uuid, primary key((u)))",
-            &[],
+            [],
         );
 
         let result = test_query("select * from UUIDTable where u = ?");

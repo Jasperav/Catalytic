@@ -9,7 +9,7 @@ fn main() {
 
     query(
         "create table if not exists person(name text, age int, email text, primary key((name), age))",
-        &[],
+        [],
     );
     query(
         "create materialized view if not exists person_by_email as
@@ -17,9 +17,9 @@ fn main() {
             from person
             where name is not null and age is not null and email is not null
             primary key ((email), name, age)",
-        &[],
+        [],
     );
-    query("create table if not exists child(birthday int, json text, json_nullable text, enum_json text, primary key((birthday)))", &[]);
+    query("create table if not exists child(birthday int, json text, json_nullable text, enum_json text, primary key((birthday)))", []);
 
     create_test_tables();
 

@@ -52,7 +52,7 @@ pub fn generate(base_dir: &Path, transformer: impl Transformer) {
         keyspace
     );
 
-    let non_materialized_views: Vec<TableName> = query_collect_to_vec(query, &[]);
+    let non_materialized_views: Vec<TableName> = query_collect_to_vec(query, []);
     let materialized_views = query_materialized_views();
     let mut tables = vec![];
 
