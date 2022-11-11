@@ -1,17 +1,8 @@
 [package]
 name = "catalytic_macro"
-version = "0.1.5"
-edition = "2018"
-authors = ["Jasper Visser <jasperav@hotmail.com>"]
 description = "Macros for the ORM for Scylla, fully compatible with Apache Cassandra™"
-repository = "https://github.com/Jasperav/catalytic"
-readme = "../README.md"
-keywords = ["database", "scylla", "cql", "cassandra"]
-categories = ["database"]
-license = "MIT"
-
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition.workspace = true
+version.workspace = true
 
 [lib]
 proc-macro = true
