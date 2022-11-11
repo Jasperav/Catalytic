@@ -3,6 +3,7 @@ name = "catalytic"
 description = "ORM for Scylla, fully compatible with Apache Cassandra™"
 edition.workspace = true
 version.workspace = true
+license.workspace = true
 
 [dependencies]
 scylla = { workspace = true }
