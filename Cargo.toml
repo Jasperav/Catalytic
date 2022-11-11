@@ -9,6 +9,13 @@ members = [
 
 [workspace.package]
 edition = "2021"
+version = "0.1.6"
+authors = ["Jasper Visser <jasperav@hotmail.com>"]
+repository = "https://github.com/Jasperav/catalytic"
+readme = "../README.md"
+keywords = ["database", "scylla", "cql", "cassandra"]
+categories = ["database"]
+license = "MIT"
 
 [workspace.dependencies]
 scylla = "0.6.1"
