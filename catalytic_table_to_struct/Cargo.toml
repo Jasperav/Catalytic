@@ -1,6 +1,6 @@
 [package]
 name = "catalytic_table_to_struct"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2018"
 authors = ["Jasper Visser <jasperav@hotmail.com>"]
 description = "Table mapper for the ORM for Scylla, fully compatible with Apache Cassandra™"
