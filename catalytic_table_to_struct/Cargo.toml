@@ -6,7 +6,7 @@ version.workspace = true
 license.workspace = true
 
 [dependencies]
-catalytic = { path = "../catalytic" }
+catalytic = { version = "0.1", path = "../catalytic" }
 proc-macro2 =  { workspace = true }
 quote =  { workspace = true }
 heck =  { workspace = true }
