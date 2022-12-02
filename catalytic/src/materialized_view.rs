@@ -83,6 +83,8 @@ mod test {
 
     #[test]
     fn materialized_view() {
+        dotenv::dotenv().unwrap();
+
         let test_table_mv = format!("{}_mv", TEST_TABLE);
         let test_table_mv_struct_name = table_name_to_struct_name(&test_table_mv);
         let drop_mv = || {

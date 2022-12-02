@@ -11,6 +11,8 @@ use std::collections::HashSet;
 
 /// Extract the query meta data from a query
 pub fn extract_query_meta_data(query: impl AsRef<str>) -> QueryMetadata {
+    dotenv::dotenv().unwrap();
+
     // Find the correct operation for the query
     let crud = find_operation(query.as_ref());
     let table_name = extract_table_name(&query, &*crud);
