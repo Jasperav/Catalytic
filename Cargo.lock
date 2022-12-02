@@ -82,6 +82,7 @@ checksum = "ec8a7b6a70fde80372154c65702f00a0f56f3e1c36abbc6c440484be248856db"
 name = "catalytic"
 version = "0.1.6"
 dependencies = [
+ "dotenv",
  "futures-util",
  "heck 0.4.0",
  "once_cell",
@@ -98,6 +99,7 @@ version = "0.1.6"
 dependencies = [
  "catalytic",
  "catalytic_query_parser",
+ "dotenv",
  "proc-macro2",
  "proc_macro2_helper",
  "quote",
@@ -113,6 +115,7 @@ dependencies = [
  "catalytic",
  "catalytic_macro",
  "catalytic_table_to_struct",
+ "dotenv",
  "proc-macro2",
  "quote",
  "regex",
