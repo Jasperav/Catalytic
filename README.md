@@ -1,7 +1,7 @@
 # Catalytic: ScyllaDB and Cassandra Object-Relation Mapper
 
 [![Latest Version](https://img.shields.io/crates/v/catalytic.svg)](https://crates.io/crates/catalytic)
-[![Build Status](https://img.shields.io/github/workflow/status/jasperav/catalytic/Scylla/master)](https://github.com/jasperav/catalytic/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Jasperav/catalytic/scylla.yml?branch=master)](https://github.com/jasperav/catalytic/actions)
 
 <img src="assets/rust-orm.png" height="200" align="right" title="Rust ORM ScyllaDB logo">
 This library contains several crates with the following features:
