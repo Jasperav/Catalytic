@@ -35,6 +35,8 @@ pub(crate) fn write<T: Transformer>(
     let select_all_count_fn_name_qv = qv(&select_all_count_fn_name);
     let log_library = entity_writer.log_library();
     let column_names = entity_writer.comma_separated_column_names();
+    let disallow_partitionless_static_queries =
+        entity_writer.disallow_partitionless_static_queries();
     let select_all_constant = select_all_constant();
     let select_all_query = format!(
         "select {} from {}",
@@ -45,14 +47,17 @@ pub(crate) fn write<T: Transformer>(
         &select_all_fn_name,
         &struct_name_ident,
         &select_all_constant,
+        &disallow_partitionless_static_queries,
     );
     let select_all_count_constant = select_all_count_constant();
     let select_all_count_query = format!("select count(*) from {}", entity_writer.table.table_name);
 
     let mut tokens_constants = quote! {
         /// The query to select all rows in the table
+        #disallow_partitionless_static_queries
         pub const #select_all_constant: &str = #select_all_query;
         /// The query to count all rows in the table
+        #disallow_partitionless_static_queries
         pub const #select_all_count_constant: &str = #select_all_count_query;
     };
 
@@ -94,6 +99,7 @@ pub(crate) fn write<T: Transformer>(
         }
 
         /// Returns a struct that can perform a query which counts the rows in this table
+        #disallow_partitionless_static_queries
         pub fn #select_all_count_fn_name_qv() -> #select_unique_expect<catalytic::query_transform::Count, &'static str, &'static [u8; 0]> {
             #select_unique_expect::new(Qv {
                 query: #select_all_count_constant,
@@ -102,6 +108,7 @@ pub(crate) fn write<T: Transformer>(
         }
 
         /// Performs the count query
+        #disallow_partitionless_static_queries
         pub async fn #select_all_count_fn_name(session: &CachingSession) -> Result<QueryResultUniqueRowExpect<CountType>, SingleSelectQueryErrorTransform> {
             #select_all_count_fn_name_qv().select_count(session).await
         }
@@ -340,6 +347,7 @@ pub(crate) fn write<T: Transformer>(
                     /// The order of the columns in the query are the same as the order of the columns in the base table
                     /// This means that a query can be done in this materialized view table, but a free conversation
                     /// can be done to a struct of the base table
+                    #disallow_partitionless_static_queries
                     pub const #select_all_constant: &str = #query;
                 });
 
@@ -348,9 +356,11 @@ pub(crate) fn write<T: Transformer>(
                     &base_table(&select_all_fn_name),
                     &format_ident!("{}", mv.base_struct_name),
                     &select_all_constant,
+                    &disallow_partitionless_static_queries,
                 );
 
                 tokens_type.extend(quote! {
+                    #disallow_partitionless_static_queries
                     #select_all_base_table
                 });
             }
@@ -365,12 +375,14 @@ fn create_select_all_query(
     fn_name: &Ident,
     row_type: &Ident,
     select_all_query: &Ident,
+    disallow_partitionless_static_queries: &TokenStream,
 ) -> TokenStream {
     let select_multiple_qv = qv(fn_name);
     let select_multiple_all_in_memory = all_in_memory(fn_name);
 
     quote! {
         /// Returns a struct that can perform a selection of all rows in the database
+        #disallow_partitionless_static_queries
         pub fn #select_multiple_qv() -> #select_multiple<#row_type, &'static str, &'static [u8; 0]> {
             #select_multiple::new(Qv {
                 query: #select_all_query,
@@ -380,12 +392,14 @@ fn create_select_all_query(
 
         /// Returns a struct that can perform a selection of all rows in the database
         /// with a specified page size
+        #disallow_partitionless_static_queries
         pub async fn #fn_name(session: &CachingSession, page_size: Option<i32>) -> Result<TypedRowIterator<#row_type>, QueryError> {
             #select_multiple_qv().select(session, page_size).await
         }
 
         /// Returns a struct that can perform a selection of all rows in the database
         /// It will accumulate all rows in memory by sending paged queries
+        #disallow_partitionless_static_queries
         pub async fn #select_multiple_all_in_memory(session: &CachingSession, page_size: i32) -> Result<QueryEntityVec<#row_type>, MultipleSelectQueryErrorTransform> {
             #select_multiple_qv().select_all_in_memory(session, page_size).await
         }

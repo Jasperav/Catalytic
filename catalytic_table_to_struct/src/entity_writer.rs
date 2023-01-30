@@ -97,6 +97,16 @@ impl<T: Transformer> EntityWriter<'_, T> {
         self.transformer.log_library().as_str().parse().unwrap()
     }
 
+    pub(crate) fn disallow_partitionless_static_queries(&self) -> TokenStream {
+        if self.transformer.disallow_partitionless_static_queries() {
+            quote! {
+                #[cfg(debug_assertions)]
+            }
+        } else {
+            quote! {}
+        }
+    }
+
     pub(crate) fn ident_fields(&self) -> Vec<Ident> {
         self.struct_field_metadata
             .fields

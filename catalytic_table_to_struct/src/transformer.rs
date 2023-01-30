@@ -77,6 +77,12 @@ pub trait Transformer {
         "tracing".to_string()
     }
 
+    /// Return true to disallow auto generated queries without a partition, like the select * from table
+    /// It will still be available for debugging though
+    fn disallow_partitionless_static_queries(&self) -> bool {
+        false
+    }
+
     /// Adds a way to add the JSON mapping to a property
     fn struct_field(&self, _struct_table: StructTable, _column_name: &str) -> StructField {
         StructField {
