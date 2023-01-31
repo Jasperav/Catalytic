@@ -31,10 +31,13 @@ macro_rules! create_transformer {
 
 impl<T: Transformer> EntityWriter<'_, T> {
     pub fn create_tokens(self) -> TokenStream {
+        let disallow_partitionless_queries = self.disallow_partitionless_static_queries();
         let mut tokens = quote! {
             use catalytic::scylla;
             use scylla::CachingSession;
+            #disallow_partitionless_queries
             use scylla::transport::iterator::TypedRowIterator;
+            #disallow_partitionless_queries
             use scylla::transport::errors::QueryError;
             use scylla::frame::value::SerializedValues;
             #[allow(unused_imports)]
