@@ -170,8 +170,7 @@ impl Parse for Query {
             vec![]
         } else {
             let _: syn::Token![,] = syn::parse::Parse::parse(input)?;
-            let punc_idents: Punctuated<syn::Ident, syn::Token![,]> =
-                <Punctuated<syn::Ident, syn::Token![,]>>::parse(input)?;
+            let punc_idents = <Punctuated<syn::Ident, syn::Token![,]>>::parse(input)?;
 
             punc_idents.iter().cloned().collect()
         };
