@@ -6,7 +6,6 @@ use catalytic::materialized_view::query_materialized_view;
 use catalytic::query_metadata::{query_columns, QueryMetadata, QueryType};
 use quote::quote;
 use syn::parse::{Parse, ParseStream};
-use syn::parse_quote::ParseQuote;
 use syn::parse_str;
 use syn::punctuated::Punctuated;
 
@@ -170,8 +169,8 @@ impl Parse for Query {
             vec![]
         } else {
             let _: syn::Token![,] = syn::parse::Parse::parse(input)?;
-            let punc_idents: Punctuated<syn::Ident, syn::Token![,]> =
-                <Punctuated<syn::Ident, syn::Token![,]>>::parse(input)?;
+            let punc_idents =
+                <Punctuated<syn::Ident, syn::Token![,]>>::parse_separated_nonempty(input)?;
 
             punc_idents.iter().cloned().collect()
         };
