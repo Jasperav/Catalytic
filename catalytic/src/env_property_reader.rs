@@ -5,6 +5,10 @@ use std::env;
 pub const TEST_DB_KEYSPACE_KEY: &str = "TEST_DB_KEYSPACE_KEY";
 /// Defaults to 127.0.0.1:9042
 pub const SCYLLA_URI: &str = "SCYLLA_URI";
+/// Defaults to cassandra
+pub const SCYLLA_USERNAME: &str = "SCYLLA_USERNAME";
+/// Defaults to cassandra
+pub const SCYLLA_PASSWORD: &str = "SCYLLA_PASSWORD";
 
 pub fn keyspace() -> String {
     env::var(TEST_DB_KEYSPACE_KEY).unwrap_or_else(|_| {
@@ -17,4 +21,12 @@ pub fn keyspace() -> String {
 
 pub fn database_url() -> String {
     env::var(SCYLLA_URI).unwrap_or_else(|_| "127.0.0.1:9042".to_string())
+}
+
+pub fn username() -> String {
+    env::var(SCYLLA_USERNAME).unwrap_or_else(|_| "cassandra".to_string())
+}
+
+pub fn password() -> String {
+    env::var(SCYLLA_PASSWORD).unwrap_or_else(|_| "cassandra".to_string())
 }
