@@ -131,7 +131,6 @@ impl<T: Transformer> EntityWriter<'_, T> {
 
     pub(crate) fn comma_separated_question_marks(&self, amount: usize) -> String {
         (0..amount)
-            .into_iter()
             .map(|_| "?".to_string())
             .collect::<Vec<_>>()
             .join(", ")
