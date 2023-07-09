@@ -95,7 +95,7 @@ checksum = "89b2fd2a0dcf38d7971e2194b6b6eebab45ae01067456a7fd93d5547a61b70be"
 
 [[package]]
 name = "catalytic"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "dotenv",
  "futures-util",
@@ -110,7 +110,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_macro"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "catalytic",
  "catalytic_query_parser",
@@ -125,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_query_parser"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "catalytic",
  "catalytic_macro",
@@ -141,7 +141,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_table_to_struct"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "catalytic",
  "heck 0.4.1",
@@ -206,7 +206,7 @@ checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
 
 [[package]]
 name = "example_project"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "catalytic",
  "catalytic_macro",
