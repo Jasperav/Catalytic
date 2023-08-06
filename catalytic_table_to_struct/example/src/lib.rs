@@ -106,6 +106,7 @@ mod test {
             name: "name".to_string(),
             age: 1,
             email: "2".to_string(),
+            row_type: "test".to_string(),
         };
 
         person.to_ref().insert(&session).await.unwrap();
@@ -259,6 +260,7 @@ mod test {
                 name: &name,
                 age: &index,
                 email: "",
+                row_type: "34",
             }
             .insert(&session)
             .await
@@ -308,11 +310,12 @@ mod test {
             name: "name".to_string(),
             age: 1,
             email: "myemail".to_string(),
+            row_type: "4".to_string(),
         };
 
         person.to_ref().insert(&session).await.unwrap();
-        let email = &person.email;
 
+        let email = &person.email;
         let transformed_type =
             query_base_table!("select * from person_by_email where email = ?", email);
         let mut rows = transformed_type.select(&session, None).await.unwrap();

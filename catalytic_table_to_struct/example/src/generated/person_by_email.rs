@@ -15,19 +15,19 @@ use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
 use scylla::CachingSession;
 #[doc = r" The query to select all rows in the table"]
-pub const SELECT_ALL_QUERY: &str = "select email, name, age from person_by_email";
+pub const SELECT_ALL_QUERY: &str = "select email, name, age, type from person_by_email";
 #[doc = r" The query to count all rows in the table"]
 pub const SELECT_ALL_COUNT_QUERY: &str = "select count(*) from person_by_email";
 #[doc = r" The query to select all rows in the table, based on the base table"]
 #[doc = r" The order of the columns in the query are the same as the order of the columns in the base table"]
 #[doc = r" This means that a query can be done in this materialized view table, but a free conversation"]
 #[doc = r" can be done to a struct of the base table"]
-pub const SELECT_ALL_QUERY_BASE_TABLE: &str = "select name, age, email from person_by_email";
+pub const SELECT_ALL_QUERY_BASE_TABLE: &str = "select name, age, email, type from person_by_email";
 #[doc = r" The query to retrieve a unique row in this table"]
 pub const SELECT_UNIQUE_QUERY: &str =
-    "select email, name, age from person_by_email where email = ? and name = ? and age = ?";
+    "select email, name, age, type from person_by_email where email = ? and name = ? and age = ?";
 pub const SELECT_UNIQUE_QUERY_BASE_TABLE: &str =
-    "select name, age, email from person_by_email where email = ? and name = ? and age = ?";
+    "select name, age, email, type from person_by_email where email = ? and name = ? and age = ?";
 #[doc = r" This is the struct which is generated from the table"]
 #[doc = r" If you want to perform CRUD operations, do the following:"]
 #[doc = r"     Create -> convert this struct to a borrowed struct"]
@@ -44,6 +44,7 @@ pub struct PersonByEmail {
     pub name: String,
     #[clustering_key]
     pub age: i32,
+    pub row_type: String,
 }
 impl PersonByEmail {
     #[doc = r" Create an borrowed primary key from the struct values"]
@@ -117,6 +118,7 @@ pub struct PersonByEmailRef<'a> {
     pub email: &'a str,
     pub name: &'a str,
     pub age: &'a i32,
+    pub row_type: &'a str,
 }
 impl From<PersonByEmailRef<'_>> for PersonByEmail {
     #[doc = r" Conversation method to go from a borrowed struct to an owned struct"]
@@ -125,6 +127,7 @@ impl From<PersonByEmailRef<'_>> for PersonByEmail {
             email: f.email.to_string(),
             name: f.name.to_string(),
             age: f.age.clone(),
+            row_type: f.row_type.to_string(),
         }
     }
 }
@@ -135,6 +138,7 @@ impl PersonByEmail {
             email: &self.email,
             name: &self.name,
             age: &self.age,
+            row_type: &self.row_type,
         }
     }
 }

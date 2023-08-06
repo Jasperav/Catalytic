@@ -14,21 +14,23 @@ use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
 use scylla::CachingSession;
 #[doc = r" The query to select all rows in the table"]
-pub const SELECT_ALL_QUERY: &str = "select name, age, email from person";
+pub const SELECT_ALL_QUERY: &str = "select name, age, email, type from person";
 #[doc = r" The query to count all rows in the table"]
 pub const SELECT_ALL_COUNT_QUERY: &str = "select count(*) from person";
 #[doc = r" The query to insert a unique row in the table"]
-pub const INSERT_QUERY: &str = "insert into person(name, age, email) values (?, ?, ?)";
+pub const INSERT_QUERY: &str = "insert into person(name, age, email, type) values (?, ?, ?, ?)";
 #[doc = r" The query to insert a unique row in the table with a TTL"]
 pub const INSERT_TTL_QUERY: &str =
-    "insert into person(name, age, email) values (?, ?, ?) using ttl ?";
+    "insert into person(name, age, email, type) values (?, ?, ?, ?) using ttl ?";
 #[doc = r" The query truncate the whole table"]
 pub const TRUNCATE_QUERY: &str = "truncate person";
 #[doc = r" The query to retrieve a unique row in this table"]
 pub const SELECT_UNIQUE_QUERY: &str =
-    "select name, age, email from person where name = ? and age = ?";
+    "select name, age, email, type from person where name = ? and age = ?";
 #[doc = "The query to update column email"]
 pub const UPDATE_EMAIL_QUERY: &str = "update person set email = ? where name = ? and age = ?";
+#[doc = "The query to update column row_type"]
+pub const UPDATE_ROW_TYPE_QUERY: &str = "update person set row_type = ? where name = ? and age = ?";
 #[doc = r" The query to delete a unique row in the table"]
 pub const DELETE_QUERY: &str = "delete from person where name = ? and age = ?";
 #[doc = r" This is the struct which is generated from the table"]
@@ -46,6 +48,7 @@ pub struct Person {
     #[clustering_key]
     pub age: i32,
     pub email: String,
+    pub row_type: String,
 }
 impl Person {
     #[doc = r" Create an borrowed primary key from the struct values"]
@@ -117,6 +120,7 @@ pub struct PersonRef<'a> {
     pub name: &'a str,
     pub age: &'a i32,
     pub email: &'a str,
+    pub row_type: &'a str,
 }
 impl From<PersonRef<'_>> for Person {
     #[doc = r" Conversation method to go from a borrowed struct to an owned struct"]
@@ -125,6 +129,7 @@ impl From<PersonRef<'_>> for Person {
             name: f.name.to_string(),
             age: f.age.clone(),
             email: f.email.to_string(),
+            row_type: f.row_type.to_string(),
         }
     }
 }
@@ -135,6 +140,7 @@ impl Person {
             name: &self.name,
             age: &self.age,
             email: &self.email,
+            row_type: &self.row_type,
         }
     }
 }
@@ -162,10 +168,11 @@ pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
 impl<'a> PersonRef<'a> {
     #[doc = r" Returns a struct that can perform an insert operation"]
     pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::with_capacity(3usize);
+        let mut serialized = SerializedValues::with_capacity(4usize);
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
+        serialized.add_value(&self.row_type)?;
         Ok(Insert::new(Qv {
             query: INSERT_QUERY,
             values: serialized,
@@ -178,10 +185,11 @@ impl<'a> PersonRef<'a> {
     }
     #[doc = r" Returns a struct that can perform an insert operation with a TTL"]
     pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::with_capacity(4usize);
+        let mut serialized = SerializedValues::with_capacity(5usize);
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
+        serialized.add_value(&self.row_type)?;
         serialized.add_value(&ttl)?;
         Ok(Insert::new(Qv {
             query: INSERT_TTL_QUERY,
@@ -212,6 +220,9 @@ impl Person {
         match update {
             UpdatableColumn::Email(val) => {
                 self.email = val;
+            }
+            UpdatableColumn::RowType(val) => {
+                self.row_type = val;
             }
         }
     }
@@ -336,6 +347,29 @@ impl PrimaryKeyRef<'_> {
     }
 }
 impl PrimaryKeyRef<'_> {
+    #[doc = "Returns a struct that can perform an update operation for column row_type"]
+    pub fn update_row_type_qv(&self, val: &str) -> Result<Update, SerializeValuesError> {
+        let mut serialized_values = SerializedValues::with_capacity(3usize);
+        serialized_values.add_value(&val)?;
+        serialized_values.add_value(&self.name)?;
+        serialized_values.add_value(&self.age)?;
+        Ok(Update::new(Qv {
+            query: UPDATE_ROW_TYPE_QUERY,
+            values: serialized_values,
+        }))
+    }
+    #[doc = "Performs an update operation for column row_type"]
+    pub async fn update_row_type(&self, session: &CachingSession, val: &str) -> ScyllaQueryResult {
+        tracing::debug!(
+            "Updating table {} with val {:#?} for row {:#?}",
+            "person",
+            val,
+            self
+        );
+        self.update_row_type_qv(val)?.update(session).await
+    }
+}
+impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform an update on a dynamic updatable column"]
     pub fn update_dyn_qv(
         &self,
@@ -343,6 +377,7 @@ impl PrimaryKeyRef<'_> {
     ) -> Result<Update, SerializeValuesError> {
         match val {
             UpdatableColumnRef::Email(val) => self.update_email_qv(val),
+            UpdatableColumnRef::RowType(val) => self.update_row_type_qv(val),
         }
     }
     #[doc = r" Performs the dynamic update"]
@@ -369,6 +404,10 @@ impl PrimaryKeyRef<'_> {
             match v {
                 UpdatableColumnRef::Email(v) => {
                     query.push(concat!(stringify!(email), " = ?"));
+                    serialized_values.add_value(v)?;
+                }
+                UpdatableColumnRef::RowType(v) => {
+                    query.push(concat!(stringify!(row_type), " = ?"));
                     serialized_values.add_value(v)?;
                 }
             }
@@ -426,12 +465,14 @@ impl PrimaryKeyRef<'_> {
 #[derive(Debug, Clone, PartialEq)]
 pub enum UpdatableColumn {
     Email(String),
+    RowType(String),
 }
 impl UpdatableColumn {
     #[doc = r" Conversation method to go from an owned updatable column struct to a borrowed updatable column struct"]
     pub fn to_ref(&self) -> UpdatableColumnRef<'_> {
         match &self {
             UpdatableColumn::Email(v) => UpdatableColumnRef::Email(v),
+            UpdatableColumn::RowType(v) => UpdatableColumnRef::RowType(v),
         }
     }
 }
@@ -441,6 +482,7 @@ impl UpdatableColumn {
 #[derive(Copy, Debug, Clone, PartialEq)]
 pub enum UpdatableColumnRef<'a> {
     Email(&'a str),
+    RowType(&'a str),
 }
 pub trait UpdatableColumnVec {
     fn to_ref(&self) -> Vec<UpdatableColumnRef<'_>>;
@@ -456,6 +498,7 @@ impl From<UpdatableColumnRef<'_>> for UpdatableColumn {
     fn from(f: UpdatableColumnRef<'_>) -> UpdatableColumn {
         match f {
             UpdatableColumnRef::Email(v) => UpdatableColumn::Email(v.to_string()),
+            UpdatableColumnRef::RowType(v) => UpdatableColumn::RowType(v.to_string()),
         }
     }
 }
@@ -469,5 +512,9 @@ impl Person {
     #[doc = "Creates the updatable column email which can be used to update it in the database"]
     pub fn updatable_column_email(&self) -> UpdatableColumnRef {
         UpdatableColumnRef::Email(&self.email)
+    }
+    #[doc = "Creates the updatable column row_type which can be used to update it in the database"]
+    pub fn updatable_column_row_type(&self) -> UpdatableColumnRef {
+        UpdatableColumnRef::RowType(&self.row_type)
     }
 }

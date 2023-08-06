@@ -9,14 +9,14 @@ fn main() {
 
     query("drop table if exists UUIDTable", []);
     query(
-        "create table if not exists person(name text, age int, email text, primary key((name), age))",
+        "create table if not exists person(name text, age int, email text, type text, primary key((name), age))",
         [],
     );
     query(
         "create materialized view if not exists person_by_email as
             select *
             from person
-            where name is not null and age is not null and email is not null
+            where name is not null and age is not null and email is not null and type is not null
             primary key ((email), name, age)",
         [],
     );
@@ -38,6 +38,7 @@ fn main() {
                 },
                 is_nullable: column_name.contains("nullable"),
                 attributes: Default::default(),
+                field_name: if column_name == "type" { "row_type".to_string() } else { column_name.to_string() },
             }
         }
     }
