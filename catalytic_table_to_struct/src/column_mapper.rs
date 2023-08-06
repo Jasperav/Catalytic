@@ -6,7 +6,8 @@ use quote::{format_ident, quote};
 
 #[derive(Clone)]
 pub struct Field {
-    pub ident: Ident,
+    pub column_name: Ident,
+    pub field_name: Ident,
     pub ident_ty: TokenStream,
     pub ty: TokenStream,
     /// When 'ty' is String, this will be 'str'
@@ -31,7 +32,7 @@ impl StructFieldMetadata {
     pub fn pk_fields_ident(&self) -> Vec<Ident> {
         self.primary_key_fields
             .iter()
-            .map(|c| format_ident!("{}", c.ident))
+            .map(|c| format_ident!("{}", c.field_name))
             .collect()
     }
 }
@@ -101,15 +102,21 @@ pub(crate) fn column_to_property(
         }
 
         let ty: TokenStream = ty.parse().unwrap();
-        let ident = format_ident!("{}", column.column_name);
+        let field_name = if struct_field.field_name.is_empty() {
+            &column.column_name
+        } else {
+            &struct_field.field_name
+        };
+        let field_name = format_ident!("{}", field_name);
         let attributes = field_ts.clone();
 
         field_ts.extend(quote! {
-            pub #ident: #ty,
+            pub #field_name: #ty,
         });
 
         let field = Field {
-            ident,
+            column_name: format_ident!("{}", column.column_name),
+            field_name,
             ident_ty: field_ts.clone(),
             ty,
             borrow_ty: borrow_ty.parse().unwrap(),

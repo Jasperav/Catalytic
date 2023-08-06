@@ -128,7 +128,7 @@ pub(crate) fn write<T: Transformer>(
 
     for field in &entity_writer.struct_field_metadata.fields {
         let ty = &field.borrow_ty;
-        let ident = &field.ident;
+        let ident = &field.field_name;
         let borrow_to_owned = &field.from_borrow_to_owned;
 
         struct_ref_fields.push(quote! {
@@ -306,7 +306,7 @@ pub(crate) fn write<T: Transformer>(
                 .struct_field_metadata
                 .non_primary_key_fields
                 .iter()
-                .map(|f| &f.ident)
+                .map(|f| &f.field_name)
                 .collect::<Vec<_>>();
 
             for field in &fields {
