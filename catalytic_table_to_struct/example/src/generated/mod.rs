@@ -6,6 +6,11 @@ pub use another_test_table::{AnotherTestTable, AnotherTestTableRef};
 pub mod child;
 pub use child::{Child, ChildRef};
 #[allow(dead_code, clippy::clone_on_copy)]
+pub mod field_name_different_combined;
+pub use field_name_different_combined::{
+    FieldNameDifferentCombined, FieldNameDifferentCombinedRef,
+};
+#[allow(dead_code, clippy::clone_on_copy)]
 pub mod person;
 pub use person::{Person, PersonRef};
 #[allow(dead_code, clippy::clone_on_copy)]

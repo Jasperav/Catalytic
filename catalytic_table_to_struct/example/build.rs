@@ -21,6 +21,7 @@ fn main() {
         [],
     );
     query("create table if not exists child(birthday int, json text, json_nullable text, enum_json text, primary key((birthday)))", []);
+    query("create table if not exists field_name_different_combined(type int, pub text, struct text, primary key((type), pub))", []);
 
     create_test_tables();
 
@@ -38,7 +39,15 @@ fn main() {
                 },
                 is_nullable: column_name.contains("nullable"),
                 attributes: Default::default(),
-                field_name: if column_name == "type" { "row_type".to_string() } else { column_name.to_string() },
+                field_name: if column_name == "type" {
+                    "row_type".to_string()
+                } else if column_name == "pub" {
+                    "row_pub".to_string()
+                } else if column_name == "struct" {
+                    "row_struct".to_string()
+                } else {
+                    "".to_string()
+                },
             }
         }
     }

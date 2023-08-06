@@ -19,8 +19,8 @@ pub enum MyJsonEnum {
 #[cfg(test)]
 mod test {
     use crate::generated::child::{truncate, Child};
-    use crate::generated::person::PersonRef;
-    use crate::generated::Person;
+    use crate::generated::person::{PersonRef, UpdatableColumnRef};
+    use crate::generated::{FieldNameDifferentCombined, Person};
     use crate::{MyJsonEnum, MyJsonType};
     use catalytic::runtime::create_connection;
     use catalytic::scylla;
@@ -298,6 +298,115 @@ mod test {
         assert_eq!(counter_loop, (rows_to_generate / 7) + 1);
 
         Ok(())
+    }
+
+    /// Tests that when a custom field_name is provided, everything keeps working
+    #[tokio::test]
+    async fn custom_field_name() {
+        tracing_subscriber::fmt::init();
+
+        let connection = CachingSession::from(create_connection().await, 1);
+
+        crate::generated::person::truncate(&connection)
+            .await
+            .unwrap();
+
+        let mut person = Person {
+            name: "name".to_string(),
+            age: 1,
+            email: "myemail".to_string(),
+            row_type: "4".to_string(),
+        };
+
+        person.to_ref().insert(&connection).await.unwrap();
+
+        macro_rules! check_values_person {
+            () => {
+                let all = crate::generated::person::select_all_in_memory(&connection, 2)
+                    .await
+                    .unwrap();
+
+                assert_eq!(1, all.entities.len());
+
+                assert_eq!(all.entities[0], person);
+            };
+        }
+
+        check_values_person!();
+
+        person.row_type += "a";
+
+        person
+            .primary_key()
+            .update_row_type(&connection, &person.row_type)
+            .await
+            .unwrap();
+
+        check_values_person!();
+
+        person.row_type += "a";
+
+        person
+            .primary_key()
+            .update_dyn(&connection, UpdatableColumnRef::RowType(&person.row_type))
+            .await
+            .unwrap();
+
+        check_values_person!();
+
+        person.row_type += "a";
+        person.email += "a";
+
+        person
+            .primary_key()
+            .update_dyn_multiple(
+                &connection,
+                &[
+                    UpdatableColumnRef::RowType(&person.row_type),
+                    UpdatableColumnRef::Email(&person.email),
+                ],
+            )
+            .await
+            .unwrap();
+
+        check_values_person!();
+
+        crate::generated::field_name_different_combined::truncate(&connection)
+            .await
+            .unwrap();
+
+        let field_name = FieldNameDifferentCombined {
+            row_type: 1,
+            row_pub: "a".to_string(),
+            row_struct: "b".to_string(),
+        };
+
+        field_name.to_ref().insert(&connection).await.unwrap();
+
+        macro_rules! check_values_field_name {
+            () => {
+                let all = crate::generated::field_name_different_combined::select_all_in_memory(
+                    &connection,
+                    2,
+                )
+                .await
+                .unwrap();
+
+                assert_eq!(1, all.entities.len());
+                assert_eq!(all.entities[0], field_name);
+            };
+        }
+
+        check_values_field_name!();
+
+        field_name.primary_key().delete(&connection).await.unwrap();
+
+        let result =
+            crate::generated::field_name_different_combined::select_all_in_memory(&connection, 2)
+                .await
+                .unwrap();
+
+        assert!(result.entities.is_empty());
     }
 
     #[tokio::test]

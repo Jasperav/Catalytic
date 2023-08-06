@@ -36,7 +36,7 @@ pub(crate) fn write<T: Transformer>(
         .primary_key_fields
         .iter()
         .map(|f| {
-            let ident = &f.ident;
+            let ident = &f.field_name;
 
             quote! {
                 serialized_values.add_value(&self.#ident)?;
@@ -57,7 +57,7 @@ pub(crate) fn write<T: Transformer>(
             #ident_ty
         });
 
-        let ident = &field.ident;
+        let ident = &field.field_name;
         let ty = &field.borrow_ty;
         let attributes = &field.pk_attributes;
         let from_ref = &field.from_borrow_to_owned;
@@ -183,21 +183,23 @@ pub(crate) fn write<T: Transformer>(
 
                 // Write the update methods
                 for field in &entity_writer.struct_field_metadata.non_primary_key_fields {
-                    let (method_name, constant) = update_field(&field.ident);
+                    let (method_name, constant) = update_field(&field.field_name);
                     let ty = &field.borrow_ty;
                     let update_query = format!(
                         "update {} set {} = ? {}",
-                        table_name, field.ident, where_clause
+                        table_name, field.column_name, where_clause
                     );
                     let single_update_len = primary_key_len + 1;
                     let method_name_qv = qv(&method_name);
                     let message_return = format!(
                         "Returns a struct that can perform an update operation for column {}",
-                        field.ident
+                        field.column_name
                     );
-                    let message_perform =
-                        format!("Performs an update operation for column {}", field.ident);
-                    let message_query = format!("The query to update column {}", field.ident);
+                    let message_perform = format!(
+                        "Performs an update operation for column {}",
+                        field.column_name
+                    );
+                    let message_query = format!("The query to update column {}", field.column_name);
 
                     tokens_constants.extend(quote! {
                         #[doc = #message_query]
@@ -246,8 +248,8 @@ pub(crate) fn write<T: Transformer>(
                     .non_primary_key_fields
                     .iter()
                 {
-                    let v = create_variant(&f.ident);
-                    let (method_name, _) = update_field(&f.ident);
+                    let v = create_variant(&f.field_name);
+                    let (method_name, _) = update_field(&f.field_name);
 
                     variants.push(quote! {
                         #v
@@ -277,7 +279,7 @@ pub(crate) fn write<T: Transformer>(
                     .struct_field_metadata
                     .non_primary_key_fields
                     .iter()
-                    .map(|f| &f.ident)
+                    .map(|f| &f.column_name)
                     .collect::<Vec<_>>();
 
                 tokens_type.extend(quote! {
