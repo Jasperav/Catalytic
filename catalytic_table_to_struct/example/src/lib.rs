@@ -31,8 +31,6 @@ mod test {
 
     #[tokio::test]
     async fn crud() {
-        tracing_subscriber::fmt::init();
-
         let session = CachingSession::from(create_connection().await, 1);
 
         crate::generated::child::truncate(&session).await.unwrap();
@@ -303,8 +301,6 @@ mod test {
     /// Tests that when a custom field_name is provided, everything keeps working
     #[tokio::test]
     async fn custom_field_name() {
-        tracing_subscriber::fmt::init();
-
         let connection = CachingSession::from(create_connection().await, 1);
 
         crate::generated::person::truncate(&connection)
