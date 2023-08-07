@@ -61,3 +61,6 @@ How to implement it yourself:
 - The `query` macro returns the correct [query type](#query-types) for the given query
 - The `query_base_table` macro transforms a `select` query to the materialized view table, to a `select` query of the base table
 - `mirror` and `primary_key` can be used for other derive macros
+
+### Used in production
+https://www.beezleapp.com/ - Beezle Social allows users to connect which are nearby, discover local events now
