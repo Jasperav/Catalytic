@@ -80,7 +80,7 @@ pub fn columns_after_where(query: &str) -> Vec<ColumnInQuery> {
 
     let mut suffix = query[index + w.len()..].to_string();
     let mut column_values = vec![];
-    let operators_before_column_name = vec![" = ", " >= ", " > ", " <= ", " < ", " in "];
+    let operators_before_column_name = [" = ", " >= ", " > ", " <= ", " < ", " in "];
 
     loop {
         let mut operator_with_lowest_index = None;
