@@ -219,8 +219,6 @@ pub(crate) fn write<T: Transformer>(
             let insert_ttl_constant = insert_ttl_constant();
             let truncate_fn_name = truncate_fn_name();
             let truncate_constant = truncate_constant();
-            let field_count = entity_writer.struct_field_metadata.fields.len();
-            let insert_with_ttl_values_len = field_count + 1;
             let idents = entity_writer.ident_fields();
             let truncate = entity_writer.truncate();
             let insert = entity_writer.insert();

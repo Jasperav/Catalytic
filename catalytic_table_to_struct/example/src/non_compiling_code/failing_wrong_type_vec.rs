@@ -6,7 +6,7 @@ mod generated {
 }
 
 fn main() -> Result<(), scylla::frame::value::SerializeValuesError> {
-    let a = 1;
+    let a = &1;
 
     query!("select * from test_table where b = 1 and c in ?", a);
 
