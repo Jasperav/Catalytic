@@ -125,7 +125,7 @@ checksum = "89b2fd2a0dcf38d7971e2194b6b6eebab45ae01067456a7fd93d5547a61b70be"
 
 [[package]]
 name = "catalytic"
-version = "0.1.16"
+version = "0.1.18"
 dependencies = [
  "dotenv",
  "futures-util",
@@ -140,7 +140,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_macro"
-version = "0.1.16"
+version = "0.1.18"
 dependencies = [
  "catalytic",
  "catalytic_query_parser",
@@ -155,7 +155,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_query_parser"
-version = "0.1.16"
+version = "0.1.18"
 dependencies = [
  "catalytic",
  "catalytic_macro",
@@ -171,7 +171,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_table_to_struct"
-version = "0.1.16"
+version = "0.1.18"
 dependencies = [
  "catalytic",
  "heck 0.4.1",
@@ -193,14 +193,14 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.26"
+version = "0.4.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec837a71355b28f6556dbd569b37b3f363091c0bd4b2e735674521b4c5fd9bc5"
+checksum = "7f2c685bad3eb3d45a01354cedb7d5faa66194d1d58ba6e267a8de788f79db38"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
  "num-traits",
- "winapi",
+ "windows-targets",
 ]
 
 [[package]]
@@ -242,7 +242,7 @@ checksum = "88bffebc5d80432c9b140ee17875ff173a8ab62faad5b257da912bd2f6c1c0a1"
 
 [[package]]
 name = "example_project"
-version = "0.1.16"
+version = "0.1.18"
 dependencies = [
  "catalytic",
  "catalytic_macro",
@@ -793,9 +793,9 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "scylla"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b9aa2b618718b5d4873926cecb99fe181a3b8c52b4983e2b20d6d833bfa9c1b"
+checksum = "344a57b2b4d7e86372f86967d709f2232f72e45fc8eceb341ff39b4d482ab485"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -827,9 +827,9 @@ dependencies = [
 
 [[package]]
 name = "scylla-cql"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "048bdf0be96308ec0f5aeed2847bb2270f53355425b3afd67e64efc99d70b3e3"
+checksum = "c9642864295085ef2fe62493eec405a109fbaae9f3a9b80ea087556af4a97df2"
 dependencies = [
  "async-trait",
  "bigdecimal",
@@ -848,13 +848,13 @@ dependencies = [
 
 [[package]]
 name = "scylla-macros"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32d777dadbf7163d1524ea4f5a095146298d263a686febb96d022cf46d06df32"
+checksum = "5757ded3dfb10967ca7d1ff1084d072d565b5e10b2b21c286d5335c245425a7e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 2.0.31",
 ]
 
 [[package]]

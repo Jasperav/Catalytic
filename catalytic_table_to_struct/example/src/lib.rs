@@ -251,11 +251,11 @@ mod test {
 
         crate::generated::person::truncate(&session).await.unwrap();
 
-        let name = "doesnt_matter".to_string();
+        let name = "doesnt_matter";
 
         for index in 0..rows_to_generate {
             PersonRef {
-                name: &name,
+                name,
                 age: &index,
                 email: "",
                 row_type: "34",
@@ -429,7 +429,7 @@ mod test {
             assert_eq!(person, row.unwrap());
         }
 
-        let c = 1;
+        let c = &1;
         let transformed_type = query!("select * from test_table where b = 1 and c = ?", c);
 
         // The extracted query should be the columns and not * so it can be used in prepared statements
@@ -449,7 +449,7 @@ mod test {
         assert_eq!(SerializedValues::new(), transformed_type.qv.values);
 
         let _ = query!("select * from test_table where b = 1 and c = 2 and d > 3");
-        let val = 1;
+        let val = &1;
         let _ = query!(
             "select * from test_table where b = 1 and c = 2 and d > ?",
             val
@@ -479,7 +479,7 @@ mod test {
         );
         assert_eq!(SerializedValues::new(), transformed_type.qv.values);
 
-        let a = 1;
+        let a = &1;
         let transformed_type = query!("select * from test_table where b = 1 and c = ?", a);
 
         assert_eq!(
@@ -488,24 +488,21 @@ mod test {
         );
         assert_serialized_values!(transformed_type, a);
 
-        let a = "sadas".to_string();
+        let a = "sadas";
         let transformed_type = query!("select * from another_test_table where a = 1 and b = ?", a);
         assert_serialized_values!(transformed_type, a);
 
-        // 'a' should been borrowed, not owned
-        drop(a);
-
-        let a = vec![1, 2, 3];
+        let a = &vec![1, 2, 3];
         let transformed_type = query!("select * from test_table where b = 1 and c in ?", a);
         assert_serialized_values!(transformed_type, a);
 
-        let a = vec![1, 2];
+        let a = &vec![1, 2];
         let transformed_type = query!("select * from test_table where b = 1 and c in ? limit 1", a);
         assert_serialized_values!(transformed_type, a);
 
-        let c = vec![1, 2];
-        let b = 1;
-        let limit = 5;
+        let c = &vec![1, 2];
+        let b = &1;
+        let limit = &5;
         let transformed_type = query!(
             "select * from test_table where b = ? and c in ? limit ?",
             b,
