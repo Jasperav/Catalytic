@@ -44,16 +44,11 @@ pub fn extract_query_meta_data(query: impl AsRef<str>) -> QueryMetadata {
             column_type: ColumnType::Int,
             value: ParameterizedValue::Limit,
         });
-    } else {
-        match ttl {
-            Some(ttl) if ttl == Ttl::Parameterized => {
-                parameterized_columns_types.push(ParameterizedColumnType {
-                    column_type: ColumnType::Int,
-                    value: ParameterizedValue::UsingTtl,
-                });
-            }
-            _ => {} // Do nothing
-        }
+    } else if let Some(Ttl::Parameterized) = ttl {
+        parameterized_columns_types.push(ParameterizedColumnType {
+            column_type: ColumnType::Int,
+            value: ParameterizedValue::UsingTtl,
+        });
     }
 
     // ColumnInTable can be reused in ranges, so filter duplicates
@@ -123,7 +118,7 @@ pub fn replace_select_wildcard(query: &str, columns: &[ColumnInTable]) -> String
 pub fn test_query(query: impl AsRef<str>) -> QueryMetadata {
     let query = query.as_ref();
     let qmd = extract_query_meta_data(query);
-    let mut values = SerializedValues::with_capacity(qmd.parameterized_columns_types.len());
+    let mut values = SerializedValues::new();
 
     for parameterized_column_type in &qmd.parameterized_columns_types {
         add_random_value(&mut values, parameterized_column_type);

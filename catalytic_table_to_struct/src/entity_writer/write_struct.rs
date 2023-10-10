@@ -219,8 +219,6 @@ pub(crate) fn write<T: Transformer>(
             let insert_ttl_constant = insert_ttl_constant();
             let truncate_fn_name = truncate_fn_name();
             let truncate_constant = truncate_constant();
-            let field_count = entity_writer.struct_field_metadata.fields.len();
-            let insert_with_ttl_values_len = field_count + 1;
             let idents = entity_writer.ident_fields();
             let truncate = entity_writer.truncate();
             let insert = entity_writer.insert();
@@ -248,7 +246,13 @@ pub(crate) fn write<T: Transformer>(
                 impl <'a> #struct_name_ref_ident<'a> {
                     /// Returns a struct that can perform an insert operation
                     pub fn #insert_qv(&self) -> Result<#insert, SerializeValuesError> {
-                        let mut serialized = SerializedValues::with_capacity(#field_count);
+                        let mut size = 0;
+
+                        #(
+                          size += std::mem::size_of_val(self.#idents);
+                        )*;
+
+                        let mut serialized = SerializedValues::with_capacity(size);
 
                         #(serialized.add_value(&self.#idents)?);*;
 
@@ -268,7 +272,15 @@ pub(crate) fn write<T: Transformer>(
 
                     /// Returns a struct that can perform an insert operation with a TTL
                     pub fn #insert_ttl_qv(&self, ttl: TtlType) -> Result<#insert, SerializeValuesError> {
-                        let mut serialized = SerializedValues::with_capacity(#insert_with_ttl_values_len);
+                        let mut size = 0;
+
+                        #(
+                            size += std::mem::size_of_val(self.#idents);
+                        )*
+
+                        size += std::mem::size_of_val(&ttl);
+
+                        let mut serialized = SerializedValues::with_capacity(size);
 
                         #(serialized.add_value(&self.#idents)?);*;
 
