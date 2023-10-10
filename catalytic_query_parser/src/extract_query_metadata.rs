@@ -45,11 +45,11 @@ pub fn extract_query_meta_data(query: impl AsRef<str>) -> QueryMetadata {
             value: ParameterizedValue::Limit,
         });
     } else if let Some(Ttl::Parameterized) = ttl {
-                    parameterized_columns_types.push(ParameterizedColumnType {
-                        column_type: ColumnType::Int,
-                        value: ParameterizedValue::UsingTtl,
-                    });
-                }
+        parameterized_columns_types.push(ParameterizedColumnType {
+            column_type: ColumnType::Int,
+            value: ParameterizedValue::UsingTtl,
+        });
+    }
 
     // ColumnInTable can be reused in ranges, so filter duplicates
     let unique_columns_where_clause = extracted_columns

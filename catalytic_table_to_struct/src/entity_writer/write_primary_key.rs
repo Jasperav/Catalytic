@@ -34,16 +34,15 @@ pub(crate) fn write<T: Transformer>(
         .struct_field_metadata
         .primary_key_fields
         .iter()
-        .map(|f| {
-            &f.field_name
-        })
+        .map(|f| &f.field_name)
         .collect::<Vec<_>>();
     let add_to_serialized_values = ident_field_names
         .iter()
-        .map(|i| quote! {
+        .map(|i| {
+            quote! {
                 serialized_values.add_value(&self.#i)?;
             }
-        )
+        })
         .collect::<Vec<_>>();
 
     let serialize = quote! {
