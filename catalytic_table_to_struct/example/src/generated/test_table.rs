@@ -179,13 +179,7 @@ pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
 impl<'a> TestTableRef<'a> {
     #[doc = r" Returns a struct that can perform an insert operation"]
     pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.b);
-        size += std::mem::size_of_val(self.c);
-        size += std::mem::size_of_val(self.d);
-        size += std::mem::size_of_val(self.a);
-        size += std::mem::size_of_val(self.e);
-        let mut serialized = SerializedValues::with_capacity(size);
+        let mut serialized = SerializedValues::new();
         serialized.add_value(&self.b)?;
         serialized.add_value(&self.c)?;
         serialized.add_value(&self.d)?;
@@ -203,14 +197,7 @@ impl<'a> TestTableRef<'a> {
     }
     #[doc = r" Returns a struct that can perform an insert operation with a TTL"]
     pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.b);
-        size += std::mem::size_of_val(self.c);
-        size += std::mem::size_of_val(self.d);
-        size += std::mem::size_of_val(self.a);
-        size += std::mem::size_of_val(self.e);
-        size += std::mem::size_of_val(&ttl);
-        let mut serialized = SerializedValues::with_capacity(size);
+        let mut serialized = SerializedValues::new();
         serialized.add_value(&self.b)?;
         serialized.add_value(&self.c)?;
         serialized.add_value(&self.d)?;
@@ -309,12 +296,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a unique row selection"]
     pub fn select_unique_qv(&self) -> Result<SelectUnique<TestTable>, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.b);
-        size += std::mem::size_of_val(self.c);
-        size += std::mem::size_of_val(self.d);
-        size += std::mem::size_of_val(self.a);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
         serialized_values.add_value(&self.d)?;
@@ -342,12 +324,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
     ) -> Result<SelectUniqueExpect<TestTable>, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.b);
-        size += std::mem::size_of_val(self.c);
-        size += std::mem::size_of_val(self.d);
-        size += std::mem::size_of_val(self.a);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
         serialized_values.add_value(&self.d)?;
@@ -373,7 +350,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = "Returns a struct that can perform an update operation for column e"]
     pub fn update_e_qv(&self, val: &i32) -> Result<Update, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
@@ -465,12 +442,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a single row deletion"]
     pub fn delete_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.b);
-        size += std::mem::size_of_val(self.c);
-        size += std::mem::size_of_val(self.d);
-        size += std::mem::size_of_val(self.a);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.b)?;
         serialized_values.add_value(&self.c)?;
         serialized_values.add_value(&self.d)?;

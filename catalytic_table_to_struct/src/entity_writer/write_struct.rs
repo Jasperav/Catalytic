@@ -246,13 +246,15 @@ pub(crate) fn write<T: Transformer>(
                 impl <'a> #struct_name_ref_ident<'a> {
                     /// Returns a struct that can perform an insert operation
                     pub fn #insert_qv(&self) -> Result<#insert, SerializeValuesError> {
-                        let mut size = 0;
-
-                        #(
-                          size += std::mem::size_of_val(self.#idents);
-                        )*;
-
-                        let mut serialized = SerializedValues::with_capacity(size);
+                        // https://github.com/Jasperav/Catalytic/issues/11
+                        // let mut size = 0;
+                        //
+                        // #(
+                        //   size += std::mem::size_of_val(self.#idents);
+                        // )*;
+                        //
+                        // let mut serialized = SerializedValues::with_capacity(size);
+                        let mut serialized = SerializedValues::new();
 
                         #(serialized.add_value(&self.#idents)?);*;
 
@@ -272,15 +274,17 @@ pub(crate) fn write<T: Transformer>(
 
                     /// Returns a struct that can perform an insert operation with a TTL
                     pub fn #insert_ttl_qv(&self, ttl: TtlType) -> Result<#insert, SerializeValuesError> {
-                        let mut size = 0;
-
-                        #(
-                            size += std::mem::size_of_val(self.#idents);
-                        )*
-
-                        size += std::mem::size_of_val(&ttl);
-
-                        let mut serialized = SerializedValues::with_capacity(size);
+                        // https://github.com/Jasperav/Catalytic/issues/11
+                        // let mut size = 0;
+                        //
+                        // #(
+                        //     size += std::mem::size_of_val(self.#idents);
+                        // )*
+                        //
+                        // size += std::mem::size_of_val(&ttl);
+                        //
+                        // let mut serialized = SerializedValues::with_capacity(size);
+                        let mut serialized = SerializedValues::new();
 
                         #(serialized.add_value(&self.#idents)?);*;
 

@@ -204,13 +204,15 @@ impl Parse for Query {
             .collect::<Vec<syn::Type>>();
 
         let serialized_values = quote! {{
-            let mut size = 0;
-
-            #(
-              size += std::mem::size_of_val(#idents);
-            )*
-
-            let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::with_capacity(size);
+            // https://github.com/Jasperav/Catalytic/issues/11
+            // let mut size = 0;
+            //
+            // #(
+            //   size += std::mem::size_of_val(#idents);
+            // )*
+            //
+            // let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::with_capacity(size);
+            let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::new();
 
             #(
                 // Check if the type is correct

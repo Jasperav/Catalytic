@@ -168,12 +168,7 @@ pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
 impl<'a> PersonRef<'a> {
     #[doc = r" Returns a struct that can perform an insert operation"]
     pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.name);
-        size += std::mem::size_of_val(self.age);
-        size += std::mem::size_of_val(self.email);
-        size += std::mem::size_of_val(self.row_type);
-        let mut serialized = SerializedValues::with_capacity(size);
+        let mut serialized = SerializedValues::new();
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
@@ -190,13 +185,7 @@ impl<'a> PersonRef<'a> {
     }
     #[doc = r" Returns a struct that can perform an insert operation with a TTL"]
     pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.name);
-        size += std::mem::size_of_val(self.age);
-        size += std::mem::size_of_val(self.email);
-        size += std::mem::size_of_val(self.row_type);
-        size += std::mem::size_of_val(&ttl);
-        let mut serialized = SerializedValues::with_capacity(size);
+        let mut serialized = SerializedValues::new();
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
@@ -287,10 +276,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a unique row selection"]
     pub fn select_unique_qv(&self) -> Result<SelectUnique<Person>, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.name);
-        size += std::mem::size_of_val(self.age);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(SelectUnique::new(Qv {
@@ -316,10 +302,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
     ) -> Result<SelectUniqueExpect<Person>, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.name);
-        size += std::mem::size_of_val(self.age);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(SelectUniqueExpect::new(Qv {
@@ -343,7 +326,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = "Returns a struct that can perform an update operation for column email"]
     pub fn update_email_qv(&self, val: &str) -> Result<Update, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -366,7 +349,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = "Returns a struct that can perform an update operation for column type"]
     pub fn update_row_type_qv(&self, val: &str) -> Result<Update, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -459,10 +442,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a single row deletion"]
     pub fn delete_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
-        let mut size = 0;
-        size += std::mem::size_of_val(self.name);
-        size += std::mem::size_of_val(self.age);
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(DeleteUnique::new(Qv {

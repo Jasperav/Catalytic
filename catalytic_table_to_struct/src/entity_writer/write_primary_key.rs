@@ -46,13 +46,15 @@ pub(crate) fn write<T: Transformer>(
         .collect::<Vec<_>>();
 
     let serialize = quote! {
-        let mut size = 0;
-
-        #(
-          size += std::mem::size_of_val(self.#ident_field_names);
-        )*
-
-        let mut serialized_values = SerializedValues::with_capacity(size);
+        // https://github.com/Jasperav/Catalytic/issues/11
+        // let mut size = 0;
+        //
+        // #(
+        //   size += std::mem::size_of_val(self.#ident_field_names);
+        // )*
+        //
+        // let mut serialized_values = SerializedValues::with_capacity(size);
+        let mut serialized_values = SerializedValues::new();
 
         #(
             serialized_values.add_value(&self.#ident_field_names)?;
@@ -218,7 +220,9 @@ pub(crate) fn write<T: Transformer>(
                     impl #primary_key_struct_ref<'_> {
                         #[doc = #message_return]
                         pub fn #method_name_qv(&self, val: &#ty) -> Result<Update, SerializeValuesError> {
-                            let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
+                            // https://github.com/Jasperav/Catalytic/issues/11
+                            //let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
+                            let mut serialized_values = SerializedValues::new();
 
                             serialized_values.add_value(&val)?;
 
