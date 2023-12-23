@@ -39,7 +39,7 @@ impl<T: Transformer> EntityWriter<'_, T> {
             use scylla::transport::iterator::TypedRowIterator;
             #disallow_partitionless_queries
             use scylla::transport::errors::QueryError;
-            use scylla::frame::value::SerializedValues;
+            use scylla::frame::value::LegacySerializedValues;
             #[allow(unused_imports)]
             use scylla::frame::value::SerializeValuesError;
             #[allow(unused_imports)]

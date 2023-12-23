@@ -6,6 +6,18 @@ pub(crate) fn json(derive_input: DeriveInput) -> TokenStream {
     let name = derive_input.ident;
 
     quote! {
+        impl catalytic::scylla::_macro_internal::SerializeCql for #name {
+            fn serialize<'b>(
+                &self,
+                typ: &catalytic::scylla::_macro_internal::ColumnType,
+                writer: catalytic::scylla::_macro_internal::CellWriter<'b>,
+            ) -> Result<catalytic::scylla::_macro_internal::WrittenCellProof<'b>, catalytic::scylla::_macro_internal::SerializationError> {
+                let serialized: String = serde_json::to_string(&self).unwrap().into();
+
+                serialized.serialize(typ, writer)
+            }
+        }
+
         impl catalytic::scylla::frame::value::Value for #name {
             fn serialize(&self, buf: &mut Vec<u8>) -> Result<(), catalytic::scylla::frame::value::ValueTooBig> {
                 let serialized: String = serde_json::to_string(&self).unwrap().into();

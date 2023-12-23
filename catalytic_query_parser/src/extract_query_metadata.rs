@@ -5,9 +5,9 @@ use catalytic::query_metadata::{
     query_columns, ColumnInQuery, ParameterizedColumnType, ParameterizedValue, QueryMetadata, Ttl,
 };
 use catalytic::runtime::{block_on, GLOBAL_CONNECTION};
-use catalytic::scylla::frame::value::SerializedValues;
 use catalytic::table_metadata::{ColumnInTable, ColumnType};
 use std::collections::HashSet;
+use catalytic::scylla::_macro_internal::LegacySerializedValues;
 
 /// Extract the query meta data from a query
 pub fn extract_query_meta_data(query: impl AsRef<str>) -> QueryMetadata {
@@ -118,7 +118,7 @@ pub fn replace_select_wildcard(query: &str, columns: &[ColumnInTable]) -> String
 pub fn test_query(query: impl AsRef<str>) -> QueryMetadata {
     let query = query.as_ref();
     let qmd = extract_query_meta_data(query);
-    let mut values = SerializedValues::new();
+    let mut values = LegacySerializedValues::new();
 
     for parameterized_column_type in &qmd.parameterized_columns_types {
         add_random_value(&mut values, parameterized_column_type);
@@ -188,7 +188,7 @@ fn create_parameterized_column_types(
 
 /// Generates a random value for a given data type
 fn add_random_value(
-    serialized_values: &mut SerializedValues,
+    serialized_values: &mut LegacySerializedValues,
     parameterized_column_type: &ParameterizedColumnType,
 ) {
     let uses_in_query = match &parameterized_column_type.value {

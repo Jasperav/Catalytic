@@ -19,6 +19,7 @@ pub(crate) fn write<T: Transformer>(
         .transformer
         .struct_metadata(entity_writer.struct_table())
         .into_tokenstream();
+    let custom_macro = entity_writer.transformer.struct_custom_macros(entity_writer.struct_table());
     let struct_name_ident = entity_writer.struct_ident();
     let field_ts = &entity_writer.struct_field_metadata.field_ts;
 
@@ -71,6 +72,7 @@ pub(crate) fn write<T: Transformer>(
         /// When you converted this struct to the specified type, you will have methods available
         /// for the things you want
         #meta_data
+        #custom_macro
         pub struct #struct_name_ident {
             #field_ts
         }
@@ -254,7 +256,7 @@ pub(crate) fn write<T: Transformer>(
                         // )*;
                         //
                         // let mut serialized = SerializedValues::with_capacity(size);
-                        let mut serialized = SerializedValues::new();
+                        let mut serialized = LegacySerializedValues::new();
 
                         #(serialized.add_value(&self.#idents)?);*;
 
@@ -284,7 +286,7 @@ pub(crate) fn write<T: Transformer>(
                         // size += std::mem::size_of_val(&ttl);
                         //
                         // let mut serialized = SerializedValues::with_capacity(size);
-                        let mut serialized = SerializedValues::new();
+                        let mut serialized = LegacySerializedValues::new();
 
                         #(serialized.add_value(&self.#idents)?);*;
 

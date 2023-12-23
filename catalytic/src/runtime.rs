@@ -1,8 +1,8 @@
 use crate::env_property_reader::{database_url, keyspace, password, username};
 use once_cell::sync::Lazy;
+use scylla::_macro_internal::SerializeRow;
 use scylla::execution_profile::ExecutionProfileBuilder;
 use scylla::frame::types::Consistency;
-use scylla::frame::value::ValueList;
 use scylla::query::Query;
 use scylla::{FromRow, IntoTypedRows, Session, SessionBuilder};
 use tokio::runtime::{self, Runtime};
@@ -21,7 +21,7 @@ pub static RUNTIME: Lazy<Runtime> = Lazy::new(|| {
 
 pub fn query_collect_to_vec<Entity: FromRow>(
     query: impl Into<Query>,
-    values: impl ValueList,
+    values: impl SerializeRow,
 ) -> Vec<Entity> {
     touch_global_connection();
 
@@ -38,7 +38,7 @@ pub fn query_collect_to_vec<Entity: FromRow>(
     })
 }
 
-pub fn query(query: impl Into<Query>, values: impl ValueList) {
+pub fn query(query: impl Into<Query>, values: impl SerializeRow) {
     touch_global_connection();
 
     block_on(async move { GLOBAL_CONNECTION.query(query, values).await.unwrap() });
