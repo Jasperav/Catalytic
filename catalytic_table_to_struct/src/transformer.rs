@@ -99,9 +99,15 @@ pub trait Transformer {
     fn struct_metadata(&self, _struct_table: StructTable) -> TypeMetadata {
         TypeMetadata::with_default_values(&[
             "scylla::FromRow",
-            "scylla::ValueList",
+            "scylla::SerializeRow",
             "catalytic_macro::Mirror",
         ])
+    }
+
+    fn struct_custom_macros(&self, _struct_table: StructTable) -> TokenStream {
+        quote! {
+            #[scylla(crate = scylla, flavor = "enforce_order", skip_name_checks)]
+        }
     }
 
     /// Add custom derives to the ref struct

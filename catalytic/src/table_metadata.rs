@@ -31,7 +31,7 @@ impl ToString for ColumnKind {
 }
 
 /// Meta data about a column for a table
-#[derive(Debug, scylla::ValueList, scylla::FromRow)]
+#[derive(Debug, scylla::SerializeRow, scylla::FromRow)]
 pub struct ColumnInTable {
     /// Name of the column
     pub column_name: String,
@@ -122,5 +122,26 @@ impl ColumnType {
         };
 
         result.to_string()
+    }
+
+    /// Since Catalytic doesn't support every time, there is a separate enum with convertion
+    pub fn scylla_column_type(&self) -> scylla::frame::response::result::ColumnType {
+        match self {
+            ColumnType::TinyInt => scylla::frame::response::result::ColumnType::TinyInt,
+            ColumnType::SmallInt => scylla::frame::response::result::ColumnType::SmallInt,
+            ColumnType::Int => scylla::frame::response::result::ColumnType::Int,
+            ColumnType::BigInt => scylla::frame::response::result::ColumnType::BigInt,
+            ColumnType::Text => scylla::frame::response::result::ColumnType::Text,
+            ColumnType::Ascii => scylla::frame::response::result::ColumnType::Ascii,
+            ColumnType::Varchar => scylla::frame::response::result::ColumnType::Varint,
+            ColumnType::Boolean => scylla::frame::response::result::ColumnType::Boolean,
+            ColumnType::Time => scylla::frame::response::result::ColumnType::Time,
+            ColumnType::Timestamp => scylla::frame::response::result::ColumnType::Timestamp,
+            ColumnType::Float => scylla::frame::response::result::ColumnType::Float,
+            ColumnType::Double => scylla::frame::response::result::ColumnType::Double,
+            ColumnType::Uuid => scylla::frame::response::result::ColumnType::Uuid,
+            ColumnType::Counter => scylla::frame::response::result::ColumnType::Counter,
+            ColumnType::Custom(s) => scylla::frame::response::result::ColumnType::Custom(s.clone()),
+        }
     }
 }

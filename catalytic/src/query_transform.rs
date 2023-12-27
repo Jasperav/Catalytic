@@ -3,9 +3,9 @@
 /// methods, but specific methods, like 'update', 'delete' etc
 use crate::Cursor;
 use futures_util::{StreamExt, TryStreamExt};
+use scylla::_macro_internal::{LegacySerializedValues, SerializeRow};
 use scylla::cql_to_rust::FromRowError;
-use scylla::frame::value::SerializedValues;
-use scylla::frame::value::{SerializeValuesError, ValueList};
+use scylla::frame::value::SerializeValuesError;
 use scylla::query::Query;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
@@ -199,12 +199,12 @@ impl<T: FromRow> QueryResultUniqueRowExpect<T> {
     }
 }
 
-pub struct Qv<R: AsRef<str> = &'static str, V: ValueList = SerializedValues> {
+pub struct Qv<R: AsRef<str> = &'static str, V: SerializeRow = LegacySerializedValues> {
     pub query: R,
     pub values: V,
 }
 
-impl<R: AsRef<str> + Clone, V: ValueList + Clone> Clone for Qv<R, V> {
+impl<R: AsRef<str> + Clone, V: SerializeRow + Clone> Clone for Qv<R, V> {
     fn clone(&self) -> Self {
         Qv {
             query: self.query.clone(),
@@ -213,7 +213,7 @@ impl<R: AsRef<str> + Clone, V: ValueList + Clone> Clone for Qv<R, V> {
     }
 }
 
-impl<R: AsRef<str>, V: ValueList> Debug for Qv<R, V> {
+impl<R: AsRef<str>, V: SerializeRow> Debug for Qv<R, V> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Qv")
             .field("query", &self.query.as_ref())
@@ -221,7 +221,7 @@ impl<R: AsRef<str>, V: ValueList> Debug for Qv<R, V> {
     }
 }
 
-impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
+impl<R: AsRef<str>, V: SerializeRow> Qv<R, V> {
     async fn execute(&self, session: &CachingSession) -> ScyllaQueryResult {
         let as_ref = self.query.as_ref();
 
@@ -339,10 +339,10 @@ impl<R: AsRef<str>, V: ValueList> Qv<R, V> {
 macro_rules! simple_qv_holder {
     ($ ident : ident , $ method : ident) => {
         #[derive(Debug)]
-        pub struct $ident<R: AsRef<str> = &'static str, V: ValueList = SerializedValues> {
+        pub struct $ident<R: AsRef<str> = &'static str, V: SerializeRow = LegacySerializedValues> {
             pub qv: Qv<R, V>,
         }
-        impl<R: AsRef<str>, V: ValueList> $ident<R, V> {
+        impl<R: AsRef<str>, V: SerializeRow> $ident<R, V> {
             pub fn new(qv: Qv<R, V>) -> Self {
                 Self { qv }
             }
@@ -352,7 +352,7 @@ macro_rules! simple_qv_holder {
             }
         }
 
-        impl<R: AsRef<str>, V: ValueList> Deref for $ident<R, V> {
+        impl<R: AsRef<str>, V: SerializeRow> Deref for $ident<R, V> {
             type Target = Qv<R, V>;
 
             fn deref(&self) -> &Self::Target {
@@ -360,7 +360,7 @@ macro_rules! simple_qv_holder {
             }
         }
 
-        impl<R: AsRef<str> + Clone, V: ValueList + Clone> Clone for $ident<R, V> {
+        impl<R: AsRef<str> + Clone, V: SerializeRow + Clone> Clone for $ident<R, V> {
             fn clone(&self) -> Self {
                 $ident::new(self.qv.clone())
             }
@@ -376,19 +376,22 @@ simple_qv_holder!(Truncate, truncate);
 macro_rules! read_transform {
     ($ ident : ident) => {
         #[derive(Debug)]
-        pub struct $ident<T: FromRow, R: AsRef<str> = &'static str, V: ValueList = SerializedValues>
-        {
+        pub struct $ident<
+            T: FromRow,
+            R: AsRef<str> = &'static str,
+            V: SerializeRow = LegacySerializedValues,
+        > {
             pub qv: Qv<R, V>,
             p: PhantomData<T>,
         }
 
-        impl<T: FromRow, R: AsRef<str>, V: ValueList> $ident<T, R, V> {
+        impl<T: FromRow, R: AsRef<str>, V: SerializeRow> $ident<T, R, V> {
             pub fn new(qv: Qv<R, V>) -> $ident<T, R, V> {
                 $ident { qv, p: PhantomData }
             }
         }
 
-        impl<T: FromRow, R: AsRef<str>, V: ValueList> Deref for $ident<T, R, V> {
+        impl<T: FromRow, R: AsRef<str>, V: SerializeRow> Deref for $ident<T, R, V> {
             type Target = Qv<R, V>;
 
             fn deref(&self) -> &Self::Target {
@@ -396,7 +399,7 @@ macro_rules! read_transform {
             }
         }
 
-        impl<T: FromRow, R: AsRef<str> + Clone, V: ValueList + Clone> Clone for $ident<T, R, V> {
+        impl<T: FromRow, R: AsRef<str> + Clone, V: SerializeRow + Clone> Clone for $ident<T, R, V> {
             fn clone(&self) -> Self {
                 $ident::new(self.qv.clone())
             }
@@ -407,7 +410,7 @@ read_transform!(SelectMultiple);
 read_transform!(SelectUnique);
 read_transform!(SelectUniqueExpect);
 
-impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUnique<T, R, V> {
+impl<T: FromRow, R: AsRef<str>, V: SerializeRow> SelectUnique<T, R, V> {
     pub fn expect(self) -> SelectUniqueExpect<T, R, V> {
         SelectUniqueExpect::new(self.qv)
     }
@@ -423,7 +426,7 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUnique<T, R, V> {
     }
 }
 
-impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUniqueExpect<T, R, V> {
+impl<T: FromRow, R: AsRef<str>, V: SerializeRow> SelectUniqueExpect<T, R, V> {
     pub async fn select(
         &self,
         session: &CachingSession,
@@ -435,7 +438,7 @@ impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectUniqueExpect<T, R, V> {
     }
 }
 
-impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<Count, R, V> {
+impl<R: AsRef<str>, V: SerializeRow> SelectUniqueExpect<Count, R, V> {
     pub async fn select_count(
         &self,
         session: &CachingSession,
@@ -448,7 +451,7 @@ impl<R: AsRef<str>, V: ValueList> SelectUniqueExpect<Count, R, V> {
     }
 }
 
-impl<T: FromRow, R: AsRef<str>, V: ValueList> SelectMultiple<T, R, V> {
+impl<T: FromRow, R: AsRef<str>, V: SerializeRow> SelectMultiple<T, R, V> {
     pub async fn select(
         &self,
         session: &CachingSession,

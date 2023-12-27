@@ -26,7 +26,7 @@ mod test {
     use catalytic::scylla;
     use catalytic_macro::{query, query_base_table};
     use futures_util::StreamExt;
-    use scylla::frame::value::{SerializeValuesError, SerializedValues};
+    use scylla::frame::value::{SerializeValuesError, LegacySerializedValues};
     use scylla::CachingSession;
 
     #[tokio::test]
@@ -235,7 +235,7 @@ mod test {
 
     macro_rules! assert_serialized_values {
         ($sv: expr, $($val: expr),*) => {{
-            let mut serialized_values = SerializedValues::new();
+            let mut serialized_values = LegacySerializedValues::new();
 
             $(serialized_values.add_value(&$val).unwrap();)*
 
@@ -446,7 +446,7 @@ mod test {
             "select b, c, d, a, e from test_table where b = 1 and c = 2 and d = 3",
             transformed_type.query
         );
-        assert_eq!(SerializedValues::new(), transformed_type.qv.values);
+        assert_eq!(LegacySerializedValues::new(), transformed_type.qv.values);
 
         let _ = query!("select * from test_table where b = 1 and c = 2 and d > 3");
         let val = &1;
@@ -461,7 +461,7 @@ mod test {
             "select b, c, d, a, e from test_table limit 1",
             transformed_type.query
         );
-        assert_eq!(SerializedValues::new(), transformed_type.qv.values);
+        assert_eq!(LegacySerializedValues::new(), transformed_type.qv.values);
 
         let transformed_type = query!("select count(*) from test_table where b = 1 and c = 2");
 
@@ -469,7 +469,7 @@ mod test {
             "select count(*) from test_table where b = 1 and c = 2",
             transformed_type.query
         );
-        assert_eq!(SerializedValues::new(), transformed_type.qv.values);
+        assert_eq!(LegacySerializedValues::new(), transformed_type.qv.values);
 
         let transformed_type = query!("delete from test_table where b = 1 and c = 3");
 
@@ -477,7 +477,7 @@ mod test {
             "delete from test_table where b = 1 and c = 3",
             transformed_type.query
         );
-        assert_eq!(SerializedValues::new(), transformed_type.qv.values);
+        assert_eq!(LegacySerializedValues::new(), transformed_type.qv.values);
 
         let a = &1;
         let transformed_type = query!("select * from test_table where b = 1 and c = ?", a);

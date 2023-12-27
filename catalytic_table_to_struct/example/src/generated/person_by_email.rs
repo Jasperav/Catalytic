@@ -8,9 +8,9 @@ use catalytic::query_transform::{
     TtlType, Update,
 };
 use catalytic::scylla;
+use scylla::frame::value::LegacySerializedValues;
 #[allow(unused_imports)]
 use scylla::frame::value::SerializeValuesError;
-use scylla::frame::value::SerializedValues;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
 use scylla::CachingSession;
@@ -35,8 +35,9 @@ pub const SELECT_UNIQUE_QUERY_BASE_TABLE: &str =
 #[doc = r" When you converted this struct to the specified type, you will have methods available"]
 #[doc = r" for the things you want"]
 #[derive(
-    scylla :: FromRow, scylla :: ValueList, catalytic_macro :: Mirror, Debug, Clone, PartialEq,
+    scylla :: FromRow, scylla :: SerializeRow, catalytic_macro :: Mirror, Debug, Clone, PartialEq,
 )]
+# [scylla (crate = scylla , flavor = "enforce_order" , skip_name_checks)]
 pub struct PersonByEmail {
     #[partition_key]
     pub email: String,
@@ -225,7 +226,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a unique row selection"]
     pub fn select_unique_qv(&self) -> Result<SelectUnique<PersonByEmail>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -252,7 +253,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
     ) -> Result<SelectUniqueExpect<PersonByEmail>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -279,7 +280,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_base_table_qv(
         &self,
     ) -> Result<SelectUnique<Person>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -306,7 +307,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_base_table_qv(
         &self,
     ) -> Result<SelectUniqueExpect<Person>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.email)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;

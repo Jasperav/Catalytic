@@ -54,7 +54,7 @@ pub(crate) fn write<T: Transformer>(
         // )*
         //
         // let mut serialized_values = SerializedValues::with_capacity(size);
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
 
         #(
             serialized_values.add_value(&self.#ident_field_names)?;
@@ -222,7 +222,7 @@ pub(crate) fn write<T: Transformer>(
                         pub fn #method_name_qv(&self, val: &#ty) -> Result<Update, SerializeValuesError> {
                             // https://github.com/Jasperav/Catalytic/issues/11
                             //let mut serialized_values = SerializedValues::with_capacity(std::mem::size_of_val(val));
-                            let mut serialized_values = SerializedValues::new();
+                            let mut serialized_values = LegacySerializedValues::new();
 
                             serialized_values.add_value(&val)?;
 
@@ -297,7 +297,7 @@ pub(crate) fn write<T: Transformer>(
                 tokens_type.extend(quote! {
                 impl #primary_key_struct_ref<'_> {
                     /// Returns a struct that can perform a dynamic amount of column updates
-                    pub fn #update_dyn_multiple_qv(&self, val: &[#updatable_column_ref<'_>]) -> Result<Update<String, SerializedValues>, SerializeValuesError> {
+                    pub fn #update_dyn_multiple_qv(&self, val: &[#updatable_column_ref<'_>]) -> Result<Update<String, LegacySerializedValues>, SerializeValuesError> {
                          if val.is_empty() {
                             panic!("Empty update array")
                         }
@@ -306,7 +306,7 @@ pub(crate) fn write<T: Transformer>(
 
                         // Hard to calculate the size in advance, I guess it's not performant to loop over the values
                         // and calculate the sizes then
-                        let mut serialized_values = SerializedValues::new();
+                        let mut serialized_values = LegacySerializedValues::new();
 
                         for v in val {
                             match v {

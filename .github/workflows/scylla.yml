@@ -15,7 +15,7 @@ jobs:
     # Locally scylla can be started like so: docker run --name scylla -p 19042:19042 -p 9042:9042 --rm scylladb/scylla
     services:
       scylladb:
-        image: scylladb/scylla
+        image: scylladb/scylla:5.4
         ports:
           - 9042:9042
           - 19042:19042

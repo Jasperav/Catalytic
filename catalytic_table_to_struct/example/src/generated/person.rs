@@ -7,9 +7,9 @@ use catalytic::query_transform::{
     TtlType, Update,
 };
 use catalytic::scylla;
+use scylla::frame::value::LegacySerializedValues;
 #[allow(unused_imports)]
 use scylla::frame::value::SerializeValuesError;
-use scylla::frame::value::SerializedValues;
 use scylla::transport::errors::QueryError;
 use scylla::transport::iterator::TypedRowIterator;
 use scylla::CachingSession;
@@ -40,8 +40,9 @@ pub const DELETE_QUERY: &str = "delete from person where name = ? and age = ?";
 #[doc = r" When you converted this struct to the specified type, you will have methods available"]
 #[doc = r" for the things you want"]
 #[derive(
-    scylla :: FromRow, scylla :: ValueList, catalytic_macro :: Mirror, Debug, Clone, PartialEq,
+    scylla :: FromRow, scylla :: SerializeRow, catalytic_macro :: Mirror, Debug, Clone, PartialEq,
 )]
+# [scylla (crate = scylla , flavor = "enforce_order" , skip_name_checks)]
 pub struct Person {
     #[partition_key]
     pub name: String,
@@ -168,7 +169,7 @@ pub async fn truncate(session: &CachingSession) -> ScyllaQueryResult {
 impl<'a> PersonRef<'a> {
     #[doc = r" Returns a struct that can perform an insert operation"]
     pub fn insert_qv(&self) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::new();
+        let mut serialized = LegacySerializedValues::new();
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
@@ -185,7 +186,7 @@ impl<'a> PersonRef<'a> {
     }
     #[doc = r" Returns a struct that can perform an insert operation with a TTL"]
     pub fn insert_ttl_qv(&self, ttl: TtlType) -> Result<Insert, SerializeValuesError> {
-        let mut serialized = SerializedValues::new();
+        let mut serialized = LegacySerializedValues::new();
         serialized.add_value(&self.name)?;
         serialized.add_value(&self.age)?;
         serialized.add_value(&self.email)?;
@@ -276,7 +277,7 @@ impl From<PrimaryKeyRef<'_>> for PrimaryKey {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a unique row selection"]
     pub fn select_unique_qv(&self) -> Result<SelectUnique<Person>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(SelectUnique::new(Qv {
@@ -302,7 +303,7 @@ impl PrimaryKeyRef<'_> {
     pub fn select_unique_expect_qv(
         &self,
     ) -> Result<SelectUniqueExpect<Person>, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(SelectUniqueExpect::new(Qv {
@@ -326,7 +327,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = "Returns a struct that can perform an update operation for column email"]
     pub fn update_email_qv(&self, val: &str) -> Result<Update, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -349,7 +350,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = "Returns a struct that can perform an update operation for column type"]
     pub fn update_row_type_qv(&self, val: &str) -> Result<Update, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&val)?;
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
@@ -394,12 +395,12 @@ impl PrimaryKeyRef<'_> {
     pub fn update_dyn_multiple_qv(
         &self,
         val: &[UpdatableColumnRef<'_>],
-    ) -> Result<Update<String, SerializedValues>, SerializeValuesError> {
+    ) -> Result<Update<String, LegacySerializedValues>, SerializeValuesError> {
         if val.is_empty() {
             panic!("Empty update array")
         }
         let mut query = vec![];
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         for v in val {
             match v {
                 UpdatableColumnRef::Email(v) => {
@@ -442,7 +443,7 @@ impl PrimaryKeyRef<'_> {
 impl PrimaryKeyRef<'_> {
     #[doc = r" Returns a struct that can perform a single row deletion"]
     pub fn delete_qv(&self) -> Result<DeleteUnique, SerializeValuesError> {
-        let mut serialized_values = SerializedValues::new();
+        let mut serialized_values = LegacySerializedValues::new();
         serialized_values.add_value(&self.name)?;
         serialized_values.add_value(&self.age)?;
         Ok(DeleteUnique::new(Qv {

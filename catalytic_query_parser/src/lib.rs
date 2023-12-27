@@ -212,7 +212,7 @@ impl Parse for Query {
             // )*
             //
             // let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::with_capacity(size);
-            let mut serialized_values = catalytic::scylla::frame::value::SerializedValues::new();
+            let mut serialized_values = catalytic::scylla::frame::value::LegacySerializedValues::new();
 
             #(
                 // Check if the type is correct
