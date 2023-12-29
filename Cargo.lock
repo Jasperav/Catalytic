@@ -125,9 +125,9 @@ checksum = "a2bd12c1caf447e69cd4528f47f94d203fd2582878ecb9e9465484c4148a8223"
 
 [[package]]
 name = "catalytic"
-version = "0.1.21"
+version = "0.1.23"
 dependencies = [
- "dotenv",
+ "dotenvy",
  "futures-util",
  "heck 0.4.1",
  "once_cell",
@@ -140,11 +140,11 @@ dependencies = [
 
 [[package]]
 name = "catalytic_macro"
-version = "0.1.21"
+version = "0.1.23"
 dependencies = [
  "catalytic",
  "catalytic_query_parser",
- "dotenv",
+ "dotenvy",
  "proc-macro2",
  "proc_macro2_helper",
  "quote",
@@ -155,12 +155,12 @@ dependencies = [
 
 [[package]]
 name = "catalytic_query_parser"
-version = "0.1.21"
+version = "0.1.23"
 dependencies = [
  "catalytic",
  "catalytic_macro",
  "catalytic_table_to_struct",
- "dotenv",
+ "dotenvy",
  "proc-macro2",
  "quote",
  "regex",
@@ -171,7 +171,7 @@ dependencies = [
 
 [[package]]
 name = "catalytic_table_to_struct"
-version = "0.1.21"
+version = "0.1.23"
 dependencies = [
  "catalytic",
  "heck 0.4.1",
@@ -261,10 +261,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "dotenv"
-version = "0.15.0"
+name = "dotenvy"
+version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
+checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
 name = "either"
@@ -280,12 +280,12 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
 name = "example_project"
-version = "0.1.21"
+version = "0.1.23"
 dependencies = [
  "catalytic",
  "catalytic_macro",
  "catalytic_table_to_struct",
- "dotenv",
+ "dotenvy",
  "futures-util",
  "serde",
  "serde_json",
@@ -549,9 +549,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.6.4"
+version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
+checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
 
 [[package]]
 name = "miniz_oxide"

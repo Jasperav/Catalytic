@@ -9,7 +9,7 @@ license.workspace = true
 [build-dependencies]
 catalytic_table_to_struct = { version = "0.1", path = "../../catalytic_table_to_struct" }
 catalytic = { version = "0.1", path = "../../catalytic" }
-dotenv = { workspace = true }
+dotenvy = { workspace = true }
 
 [dependencies]
 catalytic_macro = { version = "0.1", path = "../../catalytic_macro" }

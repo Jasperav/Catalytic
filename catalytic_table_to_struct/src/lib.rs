@@ -82,6 +82,12 @@ pub fn generate(base_dir: &Path, transformer: impl Transformer) {
 
     add_generated_header(&mut mod_file);
 
+    writeln!(
+        mod_file,
+        "#![allow(dead_code)]\n#![allow(unused_imports)]\n#![allow(clippy::clone_on_copy)]"
+    )
+    .unwrap();
+
     for table in tables {
         println!("Processing table: {}", table.table_name);
 
@@ -90,7 +96,7 @@ pub fn generate(base_dir: &Path, transformer: impl Transformer) {
 
         writeln!(
             mod_file,
-            "#[allow(dead_code, clippy::clone_on_copy)]\npub mod {m};\npub use {m}::{{{}, {}}};",
+            "pub mod {m};\npub use {m}::{{{}, {}}};",
             struct_name,
             struct_name_ref,
             m = table.table_name

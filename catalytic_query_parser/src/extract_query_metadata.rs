@@ -5,13 +5,13 @@ use catalytic::query_metadata::{
     query_columns, ColumnInQuery, ParameterizedColumnType, ParameterizedValue, QueryMetadata, Ttl,
 };
 use catalytic::runtime::{block_on, GLOBAL_CONNECTION};
+use catalytic::scylla::_macro_internal::LegacySerializedValues;
 use catalytic::table_metadata::{ColumnInTable, ColumnType};
 use std::collections::HashSet;
-use catalytic::scylla::_macro_internal::LegacySerializedValues;
 
 /// Extract the query meta data from a query
 pub fn extract_query_meta_data(query: impl AsRef<str>) -> QueryMetadata {
-    dotenv::dotenv().unwrap();
+    dotenvy::dotenv().unwrap();
 
     // Find the correct operation for the query
     let crud = find_operation(query.as_ref());

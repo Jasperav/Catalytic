@@ -1,7 +1,7 @@
 error: proc macro panicked
-  --> src/non_compiling_code/param_but_no_question_mark.rs
-   |
-   |     query!("select * from test_table where b = 1 and c = 2", b);
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |
-   = help: message: index out of bounds: the len is 0 but the index is 0
+ --> src/non_compiling_code/param_but_no_question_mark.rs
+  |
+  |     query!("select * from test_table where b = 1 and c = 2", b);
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: message: index out of bounds: the len is 0 but the index is 0

@@ -19,7 +19,9 @@ pub(crate) fn write<T: Transformer>(
         .transformer
         .struct_metadata(entity_writer.struct_table())
         .into_tokenstream();
-    let custom_macro = entity_writer.transformer.struct_custom_macros(entity_writer.struct_table());
+    let custom_macro = entity_writer
+        .transformer
+        .struct_custom_macros(entity_writer.struct_table());
     let struct_name_ident = entity_writer.struct_ident();
     let field_ts = &entity_writer.struct_field_metadata.field_ts;
 

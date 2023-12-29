@@ -10,7 +10,7 @@ use syn::DeriveInput;
 /// let transformed_type = catalytic_query::query!("select * from my_table where some_property = ?", my_property);
 #[proc_macro]
 pub fn query(input: TokenStream) -> TokenStream {
-    dotenv::dotenv().unwrap();
+    dotenvy::dotenv().unwrap();
 
     let query = parse_macro_input!(input as Query);
 
@@ -25,7 +25,7 @@ pub fn query(input: TokenStream) -> TokenStream {
 /// So when querying a materialized view, call this macro if you want the structs of the base table
 #[proc_macro]
 pub fn query_base_table(input: TokenStream) -> TokenStream {
-    dotenv::dotenv().unwrap();
+    dotenvy::dotenv().unwrap();
 
     let query = parse_macro_input!(input as Query);
 
@@ -68,7 +68,7 @@ fn check_predefined_queries(query: &Query) {
 /// Annotating a struct with this macro will make it work with scylla's serialization/deserialization
 #[proc_macro_derive(Json)]
 pub fn json(input: TokenStream) -> TokenStream {
-    dotenv::dotenv().unwrap();
+    dotenvy::dotenv().unwrap();
 
     let derive_input: DeriveInput = syn::parse(input).unwrap();
 

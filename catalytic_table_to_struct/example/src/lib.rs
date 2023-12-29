@@ -26,7 +26,7 @@ mod test {
     use catalytic::scylla;
     use catalytic_macro::{query, query_base_table};
     use futures_util::StreamExt;
-    use scylla::frame::value::{SerializeValuesError, LegacySerializedValues};
+    use scylla::frame::value::{LegacySerializedValues, SerializeValuesError};
     use scylla::CachingSession;
 
     #[tokio::test]

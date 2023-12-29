@@ -78,7 +78,7 @@ pub fn block_on<F: std::future::Future>(future: F) -> F::Output {
 }
 
 pub async fn create_connection() -> Session {
-    dotenv::dotenv().unwrap();
+    dotenvy::dotenv().unwrap();
 
     let session = SessionBuilder::new()
         .known_node(database_url())

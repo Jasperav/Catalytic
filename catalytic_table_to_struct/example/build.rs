@@ -5,7 +5,7 @@ use catalytic_table_to_struct::generate;
 use catalytic_table_to_struct::transformer::{StructField, StructTable, Transformer};
 
 fn main() {
-    let _ = dotenv::dotenv();
+    let _ = dotenvy::dotenv();
 
     query("drop table if exists UUIDTable", []);
     query(

@@ -11,7 +11,7 @@ proc-macro = true
 [dependencies]
 catalytic_query_parser = { version = "0.1", path = "../catalytic_query_parser" }
 catalytic = { version = "0.1", path = "../catalytic" }
-dotenv = { workspace = true }
+dotenvy = { workspace = true }
 syn = { workspace = true }
 quote = { workspace = true }
 proc-macro2 = { workspace = true }

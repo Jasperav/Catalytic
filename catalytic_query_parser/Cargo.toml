@@ -12,7 +12,7 @@ trybuild = { workspace = true }
 [dependencies]
 catalytic = { version = "0.1", path = "../catalytic" }
 catalytic_table_to_struct = { version = "0.1", path = "../catalytic_table_to_struct" }
-dotenv = { workspace = true }
+dotenvy = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
 proc-macro2 = { workspace = true }

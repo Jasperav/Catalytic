@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 use catalytic::scylla;
 use catalytic_macro::query;
 
